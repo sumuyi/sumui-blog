@@ -4,6 +4,7 @@ import cn.dev33.satoken.exception.NotLoginException;
 import cn.hutool.core.util.StrUtil;
 import com.sumui.common.constants.ErrorCodeEnum;
 import com.sumui.common.model.ReqResult;
+import com.sumui.common.model.Status;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
@@ -52,7 +53,7 @@ public class GlobalExceptionHandler {
             String duplicateField = matcher.group(2);
             String duplicateFieldValue = matcher.group(1);
             if (StrUtil.isNotBlank(duplicateField)) {
-                return buildBody(StrUtil.format("[{}]({})数据重复", duplicateField, duplicateFieldValue), ErrorCodeEnum.ERROR.getCode(), request.getRequestURI());
+                return buildBody(StrUtil.format("[{}]({})数据重复", duplicateField, duplicateFieldValue), ErrorCodeEnum.INTERNAL_SERVER_ERROR.getCode(), request.getRequestURI());
             }
         }
         return buildBody(ex, request.getRequestURI());
@@ -64,7 +65,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ReqResult missingServletRequestParameterException(MissingServletRequestParameterException ex, HttpServletRequest request, HttpServletResponse response) {
         String errorMessage = StrUtil.format("缺失请求参数[{}]" , ex.getParameterName());
-        return buildBody(errorMessage, ErrorCodeEnum.ERROR.getCode(), request.getRequestURI());
+        return buildBody(errorMessage, ErrorCodeEnum.INTERNAL_SERVER_ERROR.getCode(), request.getRequestURI());
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
@@ -78,7 +79,7 @@ public class GlobalExceptionHandler {
         Matcher matcher = pattern.matcher(errorMessage);
         if (matcher.find()) {
             String errField = matcher.group(1);
-            return buildBody(StrUtil.format("[{}]长度超过限制" , errField), ErrorCodeEnum.ERROR.getCode(), request.getRequestURI());
+            return buildBody(StrUtil.format("[{}]长度超过限制" , errField), ErrorCodeEnum.INTERNAL_SERVER_ERROR.getCode(), request.getRequestURI());
         }
 
         return buildBody(ex, request.getRequestURI());
@@ -113,7 +114,7 @@ public class GlobalExceptionHandler {
             default:
                 message = NotLoginException.DEFAULT_MESSAGE;
         }
-        return buildBody(message, ErrorCodeEnum.NOT_LOGIN.getCode(), request.getRequestURI());
+        return buildBody(message, ErrorCodeEnum.UNAUTHORIZED.getCode(), request.getRequestURI());
     }
 
     private static ReqResult buildBody(Exception exception, String uri) {
@@ -124,10 +125,10 @@ public class GlobalExceptionHandler {
 
     private static ReqResult buildBody(String message, Integer resultCode, String uri) {
         if (StrUtil.isBlank(message)) {
-            message = ErrorCodeEnum.ERROR.getMessage();
+            message = ErrorCodeEnum.INTERNAL_SERVER_ERROR.getDescription();
         }
         if (resultCode == null) {
-            resultCode = ErrorCodeEnum.ERROR.getCode();
+            resultCode = ErrorCodeEnum.INTERNAL_SERVER_ERROR.getCode();
         }
 //        ReqResult resultBody = ReqResult.failed()
 //                .code(resultCode)
@@ -135,7 +136,10 @@ public class GlobalExceptionHandler {
 //                .path(uri);
 //        log.error("==> error:{}" , resultBody);
 //        return resultBody;
-        return new ReqResult<>();
+        ReqResult<Object> reqResult = new ReqResult<>();
+        reqResult.setResult(uri);
+        reqResult.setStatus(Status.newStatus(resultCode,message));
+        return reqResult;
     }
 
 }
