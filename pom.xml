@@ -12,6 +12,7 @@
     <modules>
         <module>sumui-web</module>
         <module>sumui-common</module>
+        <module>sumui-service</module>
     </modules>
 
     <packaging>pom</packaging>

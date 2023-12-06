@@ -12,7 +12,7 @@ public class UserController {
 
     // 测试登录，浏览器访问： http://localhost:8081/user/doLogin?username=zhang&password=123456
     @PostMapping("doLogin")
-    public ReqResult<String> doLogin(String username, String password) {
+    public ReqResult<String> doLogin(String username, String password) throws Exception {
         // 此处仅作模拟示例，真实项目需要从数据库中查询数据进行比对 
         if("zhang".equals(username) && "123456".equals(password)) {
             // 会话登录：参数填写要登录的账号id，建议的数据类型：long | int | String， 不可以传入复杂类型，如：User、Admin 等等

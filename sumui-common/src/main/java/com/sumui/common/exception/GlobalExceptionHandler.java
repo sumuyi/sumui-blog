@@ -21,8 +21,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author zhaoeryu
- * @since 2023/6/1
+ * 全局异常处理
+ * @author Sunl
+ * @since 2023/12/6
  */
 @Slf4j
 @RestControllerAdvice
@@ -34,7 +35,7 @@ public class GlobalExceptionHandler {
      * 基础异常处理
      */
     @ExceptionHandler(Exception.class)
-    public ReqResult exception(Exception ex, HttpServletRequest request, HttpServletResponse response) {
+    public ReqResult<Object> exception(Exception ex, HttpServletRequest request, HttpServletResponse response) {
         return buildBody(ex, request.getRequestURI());
     }
 
@@ -42,7 +43,7 @@ public class GlobalExceptionHandler {
      * 处理因为数据库唯一索引导致的异常
      */
     @ExceptionHandler(DuplicateKeyException.class)
-    public ReqResult duplicateKeyException(DuplicateKeyException ex, HttpServletRequest request, HttpServletResponse response) {
+    public ReqResult<Object> duplicateKeyException(DuplicateKeyException ex, HttpServletRequest request, HttpServletResponse response) {
         String errorMessage = StrUtil.blankToDefault(Optional.ofNullable(ex.getCause()).map(Throwable::getMessage).orElse(null), ex.getMessage());
         if (StrUtil.isBlank(errorMessage)) {
             return buildBody(ex, request.getRequestURI());
@@ -63,13 +64,13 @@ public class GlobalExceptionHandler {
      * 处理请求参数缺失异常
      */
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ReqResult missingServletRequestParameterException(MissingServletRequestParameterException ex, HttpServletRequest request, HttpServletResponse response) {
+    public ReqResult<Object> missingServletRequestParameterException(MissingServletRequestParameterException ex, HttpServletRequest request, HttpServletResponse response) {
         String errorMessage = StrUtil.format("缺失请求参数[{}]" , ex.getParameterName());
         return buildBody(errorMessage, ErrorCodeEnum.INTERNAL_SERVER_ERROR.getCode(), request.getRequestURI());
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ReqResult dataIntegrityViolationException(DataIntegrityViolationException ex, HttpServletRequest request, HttpServletResponse response) {
+    public ReqResult<Object> dataIntegrityViolationException(DataIntegrityViolationException ex, HttpServletRequest request, HttpServletResponse response) {
         String errorMessage = StrUtil.blankToDefault(Optional.ofNullable(ex.getCause()).map(Throwable::getMessage).orElse(null), ex.getMessage());
         if (StrUtil.isBlank(errorMessage)) {
             return buildBody(ex, request.getRequestURI());
@@ -93,7 +94,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NotLoginException.class)
-    public ReqResult notLoginException(NotLoginException ex, HttpServletRequest request, HttpServletResponse response) {
+    public ReqResult<Object> notLoginException(NotLoginException ex, HttpServletRequest request, HttpServletResponse response) {
         String message = null;
         switch (ex.getType()) {
             case NotLoginException.NOT_TOKEN:
@@ -117,25 +118,22 @@ public class GlobalExceptionHandler {
         return buildBody(message, ErrorCodeEnum.UNAUTHORIZED.getCode(), request.getRequestURI());
     }
 
-    private static ReqResult buildBody(Exception exception, String uri) {
+    private static ReqResult<Object> buildBody(Exception exception, String uri) {
         log.error(exception.getMessage(), exception);
-        String errMessage = StrUtil.blankToDefault(Optional.ofNullable(exception.getCause()).map(Throwable::getMessage).orElse(null), exception.getMessage());
+        String errMessage = StrUtil.blankToDefault(
+                Optional.ofNullable(exception.getCause()).map(Throwable::getMessage).orElse(null),
+                exception.getMessage()
+        );
         return buildBody(errMessage, null, uri);
     }
 
-    private static ReqResult buildBody(String message, Integer resultCode, String uri) {
+    private static ReqResult<Object> buildBody(String message, Integer resultCode, String uri) {
         if (StrUtil.isBlank(message)) {
             message = ErrorCodeEnum.INTERNAL_SERVER_ERROR.getDescription();
         }
         if (resultCode == null) {
             resultCode = ErrorCodeEnum.INTERNAL_SERVER_ERROR.getCode();
         }
-//        ReqResult resultBody = ReqResult.failed()
-//                .code(resultCode)
-//                .msg(message)
-//                .path(uri);
-//        log.error("==> error:{}" , resultBody);
-//        return resultBody;
         ReqResult<Object> reqResult = new ReqResult<>();
         reqResult.setResult(uri);
         reqResult.setStatus(Status.newStatus(resultCode,message));
