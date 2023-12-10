@@ -9,49 +9,60 @@
     <version>1.0-SNAPSHOT</version>
 
     <description>木易の小栈</description>
+
+    <!--父模块打包类型必须为pom-->
+    <packaging>pom</packaging>
+
+    <!-- parent指明继承关系，给出被继承的父项目的具体信息 -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.4.2</version>
+        <relativePath/>
+    </parent>
+
+    <!-- 模块说明：声明多个子模块-->
     <modules>
         <module>sumui-web</module>
         <module>sumui-common</module>
         <module>sumui-service</module>
+        <module>sumui-api</module>
+        <module>sumui-dao</module>
     </modules>
 
-    <packaging>pom</packaging>
-
-    <properties>
-        <java.version>1.8</java.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
-        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-        <maven-compiler-plugin.version>3.6.2</maven-compiler-plugin.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-
-        <spring-boot.version>2.4.2</spring-boot.version>
-
-        <mysql.version>8.0.11</mysql.version>
-        <druid.version>1.1.21</druid.version>
-        <pagehelper.version>1.3.0</pagehelper.version>
-        <hutool.version>5.8.14</hutool.version>
-        <fastjson.version>1.2.71</fastjson.version>
-        <sa-token.version>1.34.0</sa-token.version>
-        <ip2region.version>2.7.0</ip2region.version>
-        <bitwalker.version>1.21</bitwalker.version>
-        <captcha.version>1.6.2</captcha.version>
-        <easyexcel.version>3.3.2</easyexcel.version>
-        <knife4j.version>4.1.0</knife4j.version>
-        <mybaits-plus.version>3.5.2</mybaits-plus.version>
-
-        <commons-io.version>2.11.0</commons-io.version>
-        <hutool-all.version>5.8.15</hutool-all.version>
-        <itextpdf.version>5.5.13.3</itextpdf.version>
-        <kryo.version>5.4.0</kryo.version>
-        <commons-collections4.version>4.4</commons-collections4.version>
-        <commons-lang3.version>3.12.0</commons-lang3.version>
-    </properties>
-
+    <!-- 版本说明：这里统一管理依赖版本号-->
     <dependencyManagement>
         <dependencies>
+
+            <!-- 本项目模块依赖 -->
+            <dependency>
+                <groupId>com.sumui</groupId>
+                <artifactId>sumui-web</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sumui</groupId>
+                <artifactId>sumui-service</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sumui</groupId>
+                <artifactId>sumui-dao</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sumui</groupId>
+                <artifactId>sumui-api</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sumui</groupId>
+                <artifactId>sumui-common</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
+
+            <!-- =============================================== -->
+
             <!-- spring依赖 -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -66,6 +77,21 @@
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql.version}</version>
             </dependency>
+
+            <!--mybatis plus-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+
+            <!--mybatis plus生成器依赖-->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-generator</artifactId>
+                <version>${mybatis-plus.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-starter</artifactId>
@@ -128,17 +154,11 @@
                 <version>${easyexcel.version}</version>
             </dependency>
 
+            <!-- knife4j-openapi3 Swagger -->
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-openapi3-spring-boot-starter</artifactId>
                 <version>${knife4j.version}</version>
-            </dependency>
-
-            <!--Mybatis-->
-            <dependency>
-                <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-boot-starter</artifactId>
-                <version>${mybaits-plus.version}</version>
             </dependency>
 
             <dependency>
@@ -171,8 +191,42 @@
                 <artifactId>knife4j-openapi2-spring-boot-starter</artifactId>
                 <version>${knife4j.version}</version>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <maven-compiler-plugin.version>3.6.2</maven-compiler-plugin.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+        <spring-boot.version>2.4.2</spring-boot.version>
+
+        <mysql.version>8.0.11</mysql.version>
+        <druid.version>1.1.21</druid.version>
+        <pagehelper.version>1.3.0</pagehelper.version>
+        <hutool.version>5.8.14</hutool.version>
+        <fastjson.version>1.2.71</fastjson.version>
+        <sa-token.version>1.34.0</sa-token.version>
+        <ip2region.version>2.7.0</ip2region.version>
+        <bitwalker.version>1.21</bitwalker.version>
+        <captcha.version>1.6.2</captcha.version>
+        <easyexcel.version>3.3.2</easyexcel.version>
+        <knife4j.version>4.1.0</knife4j.version>
+        <mybatis-plus.version>3.5.2</mybatis-plus.version>
+
+        <commons-io.version>2.11.0</commons-io.version>
+        <hutool-all.version>5.8.15</hutool-all.version>
+        <itextpdf.version>5.5.13.3</itextpdf.version>
+        <kryo.version>5.4.0</kryo.version>
+        <commons-collections4.version>4.4</commons-collections4.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+    </properties>
 
     <repositories>
         <repository>

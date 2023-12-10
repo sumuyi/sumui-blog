@@ -3,8 +3,11 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/sumui-api/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/sumui-common/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/sumui-common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/sumui-dao/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/sumui-dependencies/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/sumui-service/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/sumui-service/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/sumui-web/src/main/java" charset="UTF-8" />

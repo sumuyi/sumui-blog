@@ -1,14 +1,26 @@
-package com.sumui.controller;
+package com.sumui.web.controller.admin;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.sumui.common.model.ReqResult;
+import com.sumui.common.model.system.SysUser;
+import com.sumui.dao.mapper.SysUserMapper;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/user/")
+@Tag(name = "用户管理", description = "用户数据增删改查")
 public class UserController {
+
+    @Autowired
+    private SysUserMapper userMapper;
 
     // 测试登录，浏览器访问： http://localhost:8081/user/doLogin?username=zhang&password=123456
     @PostMapping("doLogin")
@@ -26,6 +38,11 @@ public class UserController {
     @RequestMapping("isLogin")
     public String isLogin() {
         return "当前会话是否登录：" + StpUtil.isLogin();
+    }
+
+    @GetMapping("list")
+    public ReqResult<List<SysUser>> getUserList(){
+        return ReqResult.ok(userMapper.selectList(new LambdaQueryWrapper<>()));
     }
     
 }

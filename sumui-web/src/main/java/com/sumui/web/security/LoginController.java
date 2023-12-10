@@ -1,4 +1,4 @@
-package com.sumui.security;
+package com.sumui.web.security;
 
 import cn.dev33.satoken.annotation.SaIgnore;
 import com.sumui.common.annotation.OperateLog;
