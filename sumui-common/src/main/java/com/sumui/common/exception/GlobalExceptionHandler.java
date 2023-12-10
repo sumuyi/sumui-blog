@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
     /**
      * 基础异常处理
      */
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(ApiException.class)
     public ReqResult<Object> exception(Exception ex, HttpServletRequest request, HttpServletResponse response) {
         return buildBody(ex, request.getRequestURI());
     }
