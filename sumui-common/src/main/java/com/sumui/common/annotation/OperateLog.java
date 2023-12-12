@@ -10,7 +10,7 @@ import java.lang.annotation.*;
  * @Author @Sunl
  * @Date 2023/12/6 19:49
  */
-@Target({ ElementType.PARAMETER, ElementType.METHOD })
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface OperateLog {

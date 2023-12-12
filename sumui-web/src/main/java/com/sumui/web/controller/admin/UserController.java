@@ -2,6 +2,8 @@ package com.sumui.web.controller.admin;
 
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.sumui.common.annotation.OperateLog;
+import com.sumui.common.constants.OperateTypeEnum;
 import com.sumui.common.model.ReqResult;
 import com.sumui.common.model.system.SysUser;
 import com.sumui.dao.mapper.SysUserMapper;
@@ -41,6 +43,7 @@ public class UserController {
     }
 
     @GetMapping("list")
+    @OperateLog(title = "用户列表",businessType = OperateTypeEnum.QUERY)
     public ReqResult<List<SysUser>> getUserList(){
         return ReqResult.ok(userMapper.selectList(new LambdaQueryWrapper<>()));
     }
