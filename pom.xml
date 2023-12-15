@@ -92,6 +92,20 @@
                 <version>${mybatis-plus.version}</version>
             </dependency>
 
+            <!--velocity-->
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity-engine-core</artifactId>
+                <version>${velocity.version}</version>
+            </dependency>
+
+            <!--freemarker引擎模板-->
+            <dependency>
+                <groupId>org.freemarker</groupId>
+                <artifactId>freemarker</artifactId>
+                <version>${freemarker.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-starter</artifactId>
@@ -104,10 +118,11 @@
                 <version>${fastjson.version}</version>
             </dependency>
 
+            <!--hutool-all-->
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
-                <version>${hutool.version}</version>
+                <version>${hutool-all.version}</version>
             </dependency>
 
             <dependency>
@@ -168,12 +183,6 @@
             </dependency>
 
             <dependency>
-                <groupId>cn.hutool</groupId>
-                <artifactId>hutool-all</artifactId>
-                <version>${hutool-all.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang3.version}</version>
@@ -219,7 +228,8 @@
         <easyexcel.version>3.3.2</easyexcel.version>
         <knife4j.version>4.1.0</knife4j.version>
         <mybatis-plus.version>3.5.2</mybatis-plus.version>
-
+        <freemarker.version>2.3.31</freemarker.version>
+        <velocity.version>2.3</velocity.version>
         <commons-io.version>2.11.0</commons-io.version>
         <hutool-all.version>5.8.15</hutool-all.version>
         <itextpdf.version>5.5.13.3</itextpdf.version>
