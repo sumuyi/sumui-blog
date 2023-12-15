@@ -1,7 +1,7 @@
-package com.sumui.mapper;
+package com.sumui.dao.mapper.system;
 
-import com.sumui.entity.SysOperLog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.sumui.common.model.system.SysOperLog;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

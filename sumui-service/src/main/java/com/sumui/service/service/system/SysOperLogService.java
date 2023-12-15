@@ -1,7 +1,7 @@
-package com.sumui.service;
+package com.sumui.service.service.system;
 
-import com.sumui.entity.SysOperLog;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.sumui.common.model.system.SysOperLog;
 
 /**
  * <p>

@@ -1,4 +1,4 @@
-package com.sumui.entity;
+package com.sumui.common.model.system;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;

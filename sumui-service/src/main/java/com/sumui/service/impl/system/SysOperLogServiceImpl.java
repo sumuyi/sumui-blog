@@ -1,9 +1,9 @@
-package com.sumui.service.impl;
+package com.sumui.service.impl.system;
 
-import com.sumui.entity.SysOperLog;
-import com.sumui.mapper.SysOperLogMapper;
-import com.sumui.service.SysOperLogService;
+import com.sumui.common.model.system.SysOperLog;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sumui.dao.mapper.system.SysOperLogMapper;
+import com.sumui.service.service.system.SysOperLogService;
 import org.springframework.stereotype.Service;
 
 /**
