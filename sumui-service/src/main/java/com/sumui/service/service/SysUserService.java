@@ -6,4 +6,5 @@ package com.sumui.service.service;
  * @Date 2023/12/10 15:47
  */
 public interface SysUserService {
+    void getUUID();
 }

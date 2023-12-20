@@ -4,9 +4,12 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.sumui.common.annotation.OperateLog;
 import com.sumui.common.constants.OperateTypeEnum;
+import com.sumui.common.exception.ApiException;
 import com.sumui.common.model.ReqResult;
 import com.sumui.common.model.system.SysUser;
 import com.sumui.dao.mapper.SysUserMapper;
+import com.sumui.service.service.SysUserService;
+import com.sumui.service.service.system.SysOperLogService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @RestController
@@ -23,6 +27,11 @@ public class UserController {
 
     @Autowired
     private SysUserMapper userMapper;
+
+    @Resource
+    private SysUserService userService;
+    @Resource
+    private SysOperLogService logService;
 
     // 测试登录，浏览器访问： http://localhost:8081/user/doLogin?username=zhang&password=123456
     @PostMapping("doLogin")
@@ -45,7 +54,10 @@ public class UserController {
     @GetMapping("list")
     @OperateLog(title = "用户列表",businessType = OperateTypeEnum.QUERY)
     public ReqResult<List<SysUser>> getUserList(){
+        userService.getUUID();
+        logService.getUUID();
         return ReqResult.ok(userMapper.selectList(new LambdaQueryWrapper<>()));
+//        throw new ApiException("测试日志记录请求失败的场景");
     }
     
 }

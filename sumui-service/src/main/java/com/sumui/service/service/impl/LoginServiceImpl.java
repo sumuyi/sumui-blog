@@ -4,7 +4,11 @@ import cn.hutool.core.lang.Assert;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.sumui.common.model.system.SysUser;
 import com.sumui.service.service.LoginService;
+import com.sumui.service.service.SysUserService;
+import com.sumui.service.service.system.SysOperLogService;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 /**
  * @Description

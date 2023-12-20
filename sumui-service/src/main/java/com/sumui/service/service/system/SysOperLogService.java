@@ -13,4 +13,5 @@ import com.sumui.common.model.system.SysOperLog;
  */
 public interface SysOperLogService extends IService<SysOperLog> {
 
+    void getUUID();
 }
