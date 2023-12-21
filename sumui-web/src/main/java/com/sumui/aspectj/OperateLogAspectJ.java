@@ -16,6 +16,7 @@ import com.sumui.common.model.system.SysOperLog;
 import com.sumui.common.utils.HttpUtils;
 import com.sumui.common.utils.IpUtil;
 import com.sumui.common.utils.PropertyPreExcludeFilter;
+import com.sumui.common.utils.uuid.IDUtils;
 import com.sumui.common.utils.uuid.SnowFlakeUtil;
 import com.sumui.service.service.system.SysOperLogService;
 import lombok.extern.log4j.Log4j2;
@@ -122,7 +123,7 @@ public class OperateLogAspectJ {
             log.info("===============================日志结束===============================");
 
             SysOperLog operLog = new SysOperLog();
-            operLog.setId(String.valueOf(SnowFlakeUtil.nextId()));
+            operLog.setId(IDUtils.nextId());
 
             // todo 操作人信息
 //            operLog.setOperUserId();

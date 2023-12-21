@@ -2,6 +2,7 @@ package com.sumui.service.impl.system;
 
 import com.sumui.common.model.system.SysOperLog;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sumui.common.utils.uuid.IDUtils;
 import com.sumui.common.utils.uuid.SnowFlakeUtil;
 import com.sumui.dao.mapper.system.SysOperLogMapper;
 import com.sumui.service.service.system.SysOperLogService;
@@ -22,6 +23,6 @@ public class SysOperLogServiceImpl extends ServiceImpl<SysOperLogMapper, SysOper
      */
     @Override
     public void getUUID() {
-        System.err.println("SysOperLogServiceImpl------" + SnowFlakeUtil.nextId());
+        System.err.println("SysOperLogServiceImpl------" + IDUtils.nextId());
     }
 }
