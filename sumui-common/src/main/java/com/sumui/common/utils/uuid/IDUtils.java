@@ -3,7 +3,7 @@ package com.sumui.common.utils.uuid;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 
 public class IDUtils {
-    public static Long workId = 0224L;
+    public static Long workId = 0L;
     private static SnowFlakeUtil idWorker;
 
     public static SnowFlakeUtil getIdWorkerInstance() {

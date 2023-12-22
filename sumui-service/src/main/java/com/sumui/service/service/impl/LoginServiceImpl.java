@@ -6,6 +6,7 @@ import com.sumui.common.model.system.SysUser;
 import com.sumui.service.service.LoginService;
 import com.sumui.service.service.SysUserService;
 import com.sumui.service.service.system.SysOperLogService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -16,6 +17,7 @@ import javax.annotation.Resource;
  * @Date 2023/12/6 20:22
  */
 @Service
+@Log4j2
 public class LoginServiceImpl implements LoginService {
     /**
      * 登录接口
@@ -26,10 +28,17 @@ public class LoginServiceImpl implements LoginService {
      */
     @Override
     public String login(String username, String password) {
-        // 获取账号信息
+        // 校验
+        log.error(username + "----" + password);
+        this.validLoginInfo();
+        // 获取数据库账号信息
 
-        return "ashdfgakjshdgfajhsdgfkjhasdgfghasdfhasdgfkjiuretlwerjntbnb";
+        return "ok";
     }
+
+    private void validLoginInfo() {
+    }
+
     private SysUser getAccount(String username) {
 //        SysUser user = SysUserService.getOne(new LambdaQueryWrapper<SysUser>()
 //                .eq(SysUser::getUsername, username)
