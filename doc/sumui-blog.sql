@@ -22,10 +22,10 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_user`;
 CREATE TABLE `sys_user`  (
-    `id` varchar(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    `id` varchar(20) NOT NULL COMMENT '主键ID',
     `nickname` varchar(10) NOT NULL COMMENT '昵称',
-    `username` varchar(20) NOT NULL DEFAULT NULL COMMENT '用户名',
-    `password` varchar(255) NOT NULL DEFAULT NULL COMMENT '密码',
+    `username` varchar(20) NOT NULL COMMENT '用户名',
+    `password` varchar(255) NOT NULL COMMENT '密码',
     `mobile` varchar(20) DEFAULT NULL COMMENT '电话',
     `email` varchar(128) DEFAULT NULL COMMENT '邮箱',
     `avatar` varchar(255) DEFAULT NULL COMMENT '头像',

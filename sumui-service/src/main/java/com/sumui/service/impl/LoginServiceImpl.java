@@ -1,20 +1,14 @@
-package com.sumui.service.service.impl;
+package com.sumui.service.impl;
 
-import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.sumui.common.constants.StatusEnum;
-import com.sumui.common.constants.UserStatus;
 import com.sumui.common.exception.UserException;
 import com.sumui.common.model.system.SysUser;
 import com.sumui.service.service.LoginService;
-import com.sumui.service.service.SysUserService;
-import com.sumui.service.service.system.SysOperLogService;
+import com.sumui.service.service.system.SysUserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-import sun.misc.MessageUtils;
 
 import javax.annotation.Resource;
 
@@ -59,22 +53,22 @@ public class LoginServiceImpl implements LoginService {
             throw new UserException(StatusEnum.USER_NOT_EXISTS);
         }
 
-        if (UserStatus.DELETED.getCode().equals(user.getStatus().toString())) {
-            throw new UserException(StatusEnum.USER_DELETE);
-        }
-
-        if (UserStatus.DISABLE.getCode().equals(user.getStatus().toString())) {
-            throw new UserException(StatusEnum.USER_DISABLE);
-        }
-
-        // 验证密码
-
-        // 加密
-        String aesEncryptPwd = SaSecureUtil.aesEncrypt(user.getSalt(), password);
-        // 比较
-        if (!aesEncryptPwd.equals(user.getPassword())){
-            throw new UserException(StatusEnum.USER_PWD_ERROR);
-        }
+//        if (UserStatus.DELETED.getCode().equals(user.getStatus().toString())) {
+//            throw new UserException(StatusEnum.USER_DELETE);
+//        }
+//
+//        if (UserStatus.DISABLE.getCode().equals(user.getStatus().toString())) {
+//            throw new UserException(StatusEnum.USER_DISABLE);
+//        }
+//
+//        // 验证密码
+//
+//        // 加密
+//        String aesEncryptPwd = SaSecureUtil.aesEncrypt(user.getSalt(), password);
+//        // 比较
+//        if (!aesEncryptPwd.equals(user.getPassword())){
+//            throw new UserException(StatusEnum.USER_PWD_ERROR);
+//        }
         return user;
     }
 }
