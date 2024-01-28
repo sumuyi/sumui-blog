@@ -98,7 +98,7 @@ public class GlobalExceptionHandler {
         String message = null;
         switch (ex.getType()) {
             case NotLoginException.NOT_TOKEN:
-                message = NotLoginException.NOT_TOKEN_MESSAGE;
+                message = ErrorCodeEnum.UNAUTHORIZED.getDescription();
                 break;
             case NotLoginException.INVALID_TOKEN:
                 message = NotLoginException.INVALID_TOKEN_MESSAGE;
