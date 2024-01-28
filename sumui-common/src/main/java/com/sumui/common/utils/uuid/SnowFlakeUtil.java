@@ -7,10 +7,10 @@ import lombok.extern.log4j.Log4j2;
 public class SnowFlakeUtil {
 
     //下面两个每个5位，加起来就是10位的工作机器id
-    private static volatile long workerId;    //工作id
-    private static volatile long datacenterId;   //数据id
+    private static long workerId;    //工作id
+    private static long datacenterId;   //数据id
     //12位的序列号
-    private static volatile long sequence;
+    private static long sequence;
 
     public SnowFlakeUtil(long workerId, long datacenterId, long sequence) {
         // sanity check for workerId
@@ -53,7 +53,7 @@ public class SnowFlakeUtil {
     private static final long timestampLeftShift = sequenceBits + workerIdBits + datacenterIdBits;
 
     /** 上次时间戳，初始值为负数 */
-    private static volatile long lastTimestamp = -1L;
+    private static long lastTimestamp = -1L;
 
     public long getWorkerId() {
         return workerId;
@@ -138,9 +138,8 @@ public class SnowFlakeUtil {
 
     //---------------测试---------------
     public static void main(String[] args) {
-        SnowFlakeUtil worker = new SnowFlakeUtil(1, 1, 1);
         for (int i = 0; i < 30; i++) {
-            System.out.println(worker.nextId());
+            System.out.println(nextId());
         }
     }
 
