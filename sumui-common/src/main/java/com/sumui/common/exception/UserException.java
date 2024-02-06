@@ -24,6 +24,10 @@ public class UserException extends RuntimeException {
         this.status = Status.newStatus(code, msg);
     }
 
+    public UserException(StatusEnum statusEnum) {
+        this.status = Status.newStatus(statusEnum.getCode(), statusEnum.getMsg());
+    }
+
     public UserException(StatusEnum statusEnum, Object... args) {
         this.status = Status.newStatus(statusEnum, args);
     }

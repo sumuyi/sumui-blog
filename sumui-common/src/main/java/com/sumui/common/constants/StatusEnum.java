@@ -31,19 +31,19 @@ public enum StatusEnum {
 
     // 全局传参异常
     ILLEGAL_ARGUMENTS(100_400_001, "参数异常"),
-    ILLEGAL_ARGUMENTS_MIXED(100_400_002, "参数异常:%s"),
+    ILLEGAL_ARGUMENTS_MIXED(100_400_002, "参数异常"),
 
     // 全局权限相关
     FORBID_ERROR(100_403_001, "无权限"),
 
-    FORBID_ERROR_MIXED(100_403_002, "无权限:%s"),
+    FORBID_ERROR_MIXED(100_403_002, "无权限"),
     FORBID_NOTLOGIN(100_403_003, "未登录"),
 
     // 全局，数据不存在
-    RECORDS_NOT_EXISTS(100_404_001, "记录不存在:%s"),
+    RECORDS_NOT_EXISTS(100_404_001, "记录不存在"),
 
     // 系统异常
-    UNEXPECT_ERROR(100_500_001, "非预期异常:%s"),
+    UNEXPECT_ERROR(100_500_001, "非预期异常"),
 
     // 图片相关异常类型
     UPLOAD_PIC_FAILED(100_500_002, "图片上传失败！"),
@@ -51,33 +51,33 @@ public enum StatusEnum {
     // --------------------------------
 
     // 文章相关异常类型，前缀为200
-    ARTICLE_NOT_EXISTS(200_404_001, "文章不存在:%s"),
-    COLUMN_NOT_EXISTS(200_404_002, "教程不存在:%s"),
-    COLUMN_QUERY_ERROR(200_500_003, "教程查询异常:%s"),
+    ARTICLE_NOT_EXISTS(200_404_001, "文章不存在"),
+    COLUMN_NOT_EXISTS(200_404_002, "教程不存在"),
+    COLUMN_QUERY_ERROR(200_500_003, "教程查询异常"),
     // 教程文章已存在
-    COLUMN_ARTICLE_EXISTS(200_500_004, "专栏教程已存在:%s"),
-    ARTICLE_RELATION_TUTORIAL(200_500_006, "文章已被添加为教程:%s"),
+    COLUMN_ARTICLE_EXISTS(200_500_004, "专栏教程已存在"),
+    ARTICLE_RELATION_TUTORIAL(200_500_006, "文章已被添加为教程"),
 
     // --------------------------------
 
     // 评论相关异常类型
-    COMMENT_NOT_EXISTS(300_404_001, "评论不存在:%s"),
+    COMMENT_NOT_EXISTS(300_404_001, "评论不存在"),
 
 
     // --------------------------------
 
     // 用户相关异常
-    LOGIN_FAILED_MIXED(400_403_001, "登录失败:%s"),
-    USER_NOT_EXISTS(400_404_001, "用户不存在:%s"),
-    USER_EXISTS(400_404_002, "用户已存在:%s"),
+    LOGIN_FAILED_MIXED(400_403_001, "登录失败"),
+    USER_NOT_EXISTS(400_404_001, "用户不存在"),
+    USER_EXISTS(400_404_002, "用户已存在"),
     // 用户登录名重复
-    USER_LOGIN_NAME_REPEAT(400_404_003, "用户登录名重复:%s"),
+    USER_LOGIN_NAME_REPEAT(400_404_003, "用户登录名重复"),
 
-    USER_DISABLE(400_405_001, "用户已停用:%s"),
-    USER_DELETE(400_405_002, "用户已删除:%s"),
+    USER_DISABLE(400_405_001, "用户已停用"),
+    USER_DELETE(400_405_002, "用户已删除"),
 
     // 待审核
-    USER_NOT_AUDIT(400_500_001, "用户未审核:%s"),
+    USER_NOT_AUDIT(400_500_001, "用户未审核"),
     USER_PWD_ERROR(400_500_002, "用户名密码错误"),
     USER_OR_PWD_EMPTY(400_500_003, "用户名or密码不能为空")
     ;

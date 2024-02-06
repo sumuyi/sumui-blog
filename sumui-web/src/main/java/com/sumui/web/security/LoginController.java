@@ -29,7 +29,7 @@ public class LoginController {
     @Resource
     private LoginService loginService;
 
-    @OperateLog(title = "登录", businessType = OperateTypeEnum.LOGIN, isSaveResponseData = false, excludeParamNames = { "password" })
+    @OperateLog(title = "登录", businessType = OperateTypeEnum.LOGIN, excludeParamNames = { "password" })
     @SaIgnore
     @PostMapping("/login")
     public ReqResult<String> login(@Validated @RequestBody LoginBody loginBody) {

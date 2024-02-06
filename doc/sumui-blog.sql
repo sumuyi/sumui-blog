@@ -26,6 +26,7 @@ CREATE TABLE `sys_user`  (
     `nickname` varchar(10) NOT NULL COMMENT '昵称',
     `username` varchar(20) NOT NULL COMMENT '用户名',
     `password` varchar(255) NOT NULL COMMENT '密码',
+    `salt` varchar(500) NOT NULL COMMENT '加密盐',
     `mobile` varchar(20) DEFAULT NULL COMMENT '电话',
     `email` varchar(128) DEFAULT NULL COMMENT '邮箱',
     `avatar` varchar(255) DEFAULT NULL COMMENT '头像',

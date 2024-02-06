@@ -40,6 +40,17 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 用户异常处理
+     */
+    @ExceptionHandler(UserException.class)
+    public ReqResult<Object> userException(UserException ex, HttpServletRequest request, HttpServletResponse response) {
+        ReqResult<Object> reqResult = new ReqResult<>();
+        reqResult.setResult(request.getRequestURI());
+        reqResult.setStatus(Status.newStatus(ex.getStatus().getCode(),ex.getStatus().getMsg()));
+        return reqResult;
+    }
+
+    /**
      * 处理因为数据库唯一索引导致的异常
      */
     @ExceptionHandler(DuplicateKeyException.class)

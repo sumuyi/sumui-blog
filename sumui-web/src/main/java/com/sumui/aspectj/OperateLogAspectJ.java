@@ -124,6 +124,7 @@ public class OperateLogAspectJ {
 
             SysOperLog operLog = new SysOperLog();
             operLog.setId(IDUtils.nextId());
+            operLog.setStatus(StatusEnum.SUCCESS.getCode());
 
             // todo 操作人信息
 //            operLog.setOperUserId();
@@ -140,7 +141,7 @@ public class OperateLogAspectJ {
             operLog.setReqUrl(HttpUtils.getRequestUrl());
             operLog.setReqIp(HttpUtils.getIpAddr(request));
             operLog.setReqRegion(IpUtil.getIpRegion(HttpUtils.getIpAddr(request)));
-            operLog.setStatus(StatusEnum.SUCCESS.getCode());
+
 
             operLog.setBrowser(HttpUtils.getBrowserName(request));
             operLog.setOs(HttpUtils.getOsName(request));
@@ -183,7 +184,7 @@ public class OperateLogAspectJ {
         // 是否需要保存request，参数和值
         if (log.isSaveRequestData()) {
             // 获取参数的信息，传入到数据库中。
-            setRequestValue(joinPoint, operLog, log.excludeParamNames());
+            operLog.setReqParams(JSON.toJSONString(joinPoint.getArgs()));
         }
         // 是否需要保存response，参数和值
         if (log.isSaveResponseData() && jsonResult != null) {
