@@ -35,7 +35,7 @@ public class SysUserController {
     private SysUserService userService;
 
     @PostMapping("add")
-    public ReqResult<String> addUser(@RequestBody RegisterUserInfo registerUserInfo) throws Exception {
+    public ReqResult<Boolean> addUser(@RequestBody RegisterUserInfo registerUserInfo) throws Exception {
         return ReqResult.ok(userService.registerUserInfo(registerUserInfo));
     }
 
@@ -48,7 +48,7 @@ public class SysUserController {
     @GetMapping("list")
     @OperateLog(title = "用户列表",businessType = OperateTypeEnum.QUERY)
     public ReqResult<List<SysUser>> getUserList(){
-        logService.getUUID();
+//        logService.getUUID();
         return ReqResult.ok(userMapper.selectList(new LambdaQueryWrapper<>()));
 //        throw new ApiException("测试日志记录请求失败的场景");
     }

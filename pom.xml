@@ -28,6 +28,7 @@
         <module>sumui-service</module>
         <module>sumui-api</module>
         <module>sumui-dao</module>
+        <module>renren-fast</module>
     </modules>
 
     <!-- 版本说明：这里统一管理依赖版本号-->

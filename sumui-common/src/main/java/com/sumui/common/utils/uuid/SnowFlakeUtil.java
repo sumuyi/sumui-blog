@@ -167,7 +167,7 @@ public class SnowFlakeUtil {
     public static void main(String[] args) {
         SnowFlakeUtil worker = new SnowFlakeUtil(0224L);
         for (int i = 0; i < 30; i++) {
-            System.out.println(nextId());
+            System.out.println(worker.nextId());
         }
     }
 

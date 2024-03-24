@@ -14,7 +14,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sumui.common.utils.uuid.IDUtils;
 import com.sumui.dao.mapper.system.SysUserMapper;
 import com.sumui.service.service.system.SysUserService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * <p>
@@ -25,6 +28,7 @@ import org.springframework.stereotype.Service;
  * @since 2023-12-23 11:16:53
  */
 @Service
+@Log4j2
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> implements SysUserService {
     /**
      * 根据用户名获取用户信息
@@ -52,7 +56,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         this.verifyUserInfo(registerUserInfo);
         // 生成用户信息
         SysUser saveUser = this.convertToPojo(registerUserInfo);
-        return null;
+        log.error("saveUser:{}",saveUser);
+        return Boolean.TRUE;
     }
 
     /**
@@ -67,24 +72,22 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 //        user.setNickname(registerUserInfo.getUsername());
         user.setUsername(registerUserInfo.getUsername());
         user.setPassword(registerUserInfo.getPassword());
-        user.setSalt();
+//        user.setSalt();
         user.setMobile(registerUserInfo.getMobile());
         user.setEmail(registerUserInfo.getEmail());
         user.setAvatar(registerUserInfo.getAvatar());
         user.setSex(registerUserInfo.getSex());
-        user.setStatus(Statu);
-        user.setIsSuper();
-        user.setDeptId();
-        user.setLoginIp();
-        user.setLoginTime();
-        user.setLastActiveTime();
-        user.setCreateTime();
-        user.setUpdateTime();
-        user.setCreateBy();
-        user.setUpdateBy();
-        user.setRemark();
-        user.setDelFlag();
-
+        user.setStatus(1);
+        user.setIsSuper(0);
+//        user.setDeptId();
+//        user.setLoginIp();
+//        user.setLoginTime();
+//        user.setLastActiveTime();
+        user.setCreateTime(new Date());
+        user.setUpdateTime(new Date());
+        user.setCreateBy("1");
+        user.setUpdateBy("1");
+        return user;
     }
 
     private void verifyUserInfo(RegisterUserInfo registerUserInfo) {

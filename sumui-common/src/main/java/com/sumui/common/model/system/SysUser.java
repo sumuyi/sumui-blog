@@ -70,7 +70,7 @@ public class SysUser implements Serializable {
     private Integer sex;
 
     /**
-     * 账号状态 1：停用 0:正常
+     * 账号状态 0：停用 1:正常
      */
     private Integer status;
 
