@@ -32,8 +32,7 @@ public class LoginController {
     @OperateLog(title = "登录", businessType = OperateTypeEnum.LOGIN, excludeParamNames = { "password" })
     @SaIgnore
     @PostMapping("/login")
-    public ReqResult<String> login(@Validated @RequestBody LoginBody loginBody) {
-        String token = loginService.login(loginBody.getUsername(), loginBody.getPassword());
-        return ReqResult.ok(token);
+    public ReqResult<Boolean> login(@Validated @RequestBody LoginBody loginBody) {
+        return ReqResult.ok(loginService.login(loginBody.getUsername(), loginBody.getPassword()));
     }
 }

@@ -32,13 +32,13 @@ public class LoginServiceImpl implements LoginService {
      * @return
      */
     @Override
-    public String login(String username, String password) {
+    public Boolean login(String username, String password) {
         // 校验
         log.error(username + "----" + password);
         // 获取数据库账号信息
         SysUser loginInfo = this.validLoginInfo(username, password);
         StpUtil.login(loginInfo.getId());
-        return StpUtil.getTokenValue();
+        return Boolean.TRUE;
     }
 
     private SysUser validLoginInfo(String username, String password) {
@@ -65,10 +65,12 @@ public class LoginServiceImpl implements LoginService {
 
         // 验证密码
 
-        // 加密
-        String aesEncryptPwd = SaSecureUtil.aesEncrypt(user.getSalt(), password);
+        // 私钥解密
+        String rsaDecryptPwd = SaSecureUtil.rsaDecryptByPrivate(user.getSalt(), user.getPassword());
+        log.error("参数密码:{}",password);
+        log.error("数据库密码:{}",rsaDecryptPwd);
         // 比较
-        if (!aesEncryptPwd.equals(user.getPassword())){
+        if (!rsaDecryptPwd.equals(password)){
             throw new UserException(StatusEnum.USER_PWD_ERROR);
         }
         return user;

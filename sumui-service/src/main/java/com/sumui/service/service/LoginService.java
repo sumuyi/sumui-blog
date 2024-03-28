@@ -14,5 +14,5 @@ public interface LoginService {
      * @param password 密码
      * @return
      */
-    String login(String username, String password);
+    Boolean login(String username, String password);
 }

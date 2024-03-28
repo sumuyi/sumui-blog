@@ -1,5 +1,6 @@
 package com.sumui.service.impl.system;
 
+import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -18,6 +19,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * <p>
@@ -57,7 +59,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         // 生成用户信息
         SysUser saveUser = this.convertToPojo(registerUserInfo);
         log.error("saveUser:{}",saveUser);
-        return Boolean.TRUE;
+        return this.save(saveUser);
     }
 
     /**
@@ -68,11 +70,27 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
     private SysUser convertToPojo(RegisterUserInfo registerUserInfo) {
         SysUser user = new SysUser();
         user.setId(IDUtils.nextId());
-        // todo 后面放开单独设置昵称
-//        user.setNickname(registerUserInfo.getUsername());
+        user.setNickname(registerUserInfo.getNickname());
         user.setUsername(registerUserInfo.getUsername());
-        user.setPassword(registerUserInfo.getPassword());
-//        user.setSalt();
+        // 生成一对公钥和私钥，其中Map对象 (private=私钥, public=公钥)
+        try {
+            HashMap<String, String> rsaGenerateKeyPair = SaSecureUtil.rsaGenerateKeyPair();
+//            System.out.println(rsaGenerateKeyPair);
+
+            // 使用公钥加密
+            String ciphertext = SaSecureUtil.rsaEncryptByPublic(rsaGenerateKeyPair.get("public"), registerUserInfo.getPassword());
+//            System.out.println("公钥加密后：" + ciphertext);
+
+            // 使用私钥解密
+//            String text2 = SaSecureUtil.rsaDecryptByPrivate(privateKey, ciphertext);
+
+            user.setPassword(ciphertext);
+            user.setSalt(rsaGenerateKeyPair.get("private"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+
         user.setMobile(registerUserInfo.getMobile());
         user.setEmail(registerUserInfo.getEmail());
         user.setAvatar(registerUserInfo.getAvatar());

@@ -47,8 +47,8 @@ import java.util.Map;
  * @Author @Sunl
  * @Date 2023/12/12 19:30
  */
-@Aspect
-@Component
+//@Aspect
+//@Component
 @Log4j2
 public class OperateLogAspectJ {
 
