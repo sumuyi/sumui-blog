@@ -1,5 +1,6 @@
 package com.sumui.service.impl.system;
 
+import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -18,6 +19,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * <p>
@@ -51,13 +53,14 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return
      */
     @Override
-    public Boolean registerUserInfo(RegisterUserInfo registerUserInfo) {
+    public Boolean registerUserInfo(RegisterUserInfo registerUserInfo) throws Exception {
         // 校验用户信息
         this.verifyUserInfo(registerUserInfo);
         // 生成用户信息
         SysUser saveUser = this.convertToPojo(registerUserInfo);
         log.error("saveUser:{}",saveUser);
-        return Boolean.TRUE;
+
+        return this.save(saveUser);
     }
 
     /**
@@ -65,19 +68,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @param registerUserInfo
      * @return
      */
-    private SysUser convertToPojo(RegisterUserInfo registerUserInfo) {
+    private SysUser convertToPojo(RegisterUserInfo registerUserInfo) throws Exception {
         SysUser user = new SysUser();
         user.setId(IDUtils.nextId());
         // todo 后面放开单独设置昵称
-//        user.setNickname(registerUserInfo.getUsername());
+        user.setNickname(registerUserInfo.getNickname());
         user.setUsername(registerUserInfo.getUsername());
-        user.setPassword(registerUserInfo.getPassword());
-//        user.setSalt();
+
+        HashMap<String, String> rsaGenerateKeyPair = SaSecureUtil.rsaGenerateKeyPair();
+        String publicKey = rsaGenerateKeyPair.get("public");
+        user.setPassword(SaSecureUtil.rsaEncryptByPublic(publicKey, registerUserInfo.getPassword()));
+
+        user.setSalt(rsaGenerateKeyPair.get("private"));
         user.setMobile(registerUserInfo.getMobile());
         user.setEmail(registerUserInfo.getEmail());
         user.setAvatar(registerUserInfo.getAvatar());
         user.setSex(registerUserInfo.getSex());
-        user.setStatus(1);
+        user.setStatus(0);
         user.setIsSuper(0);
 //        user.setDeptId();
 //        user.setLoginIp();

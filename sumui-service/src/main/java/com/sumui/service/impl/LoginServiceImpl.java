@@ -1,5 +1,6 @@
 package com.sumui.service.impl;
 
+import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
@@ -24,6 +25,8 @@ import javax.annotation.Resource;
 public class LoginServiceImpl implements LoginService {
     @Resource
     private SysUserService userService;
+
+    public static final String LOGIN_USER_KEY = "loginUser";
     /**
      * 登录接口
      *
@@ -37,7 +40,9 @@ public class LoginServiceImpl implements LoginService {
         log.error(username + "----" + password);
         // 获取数据库账号信息
         SysUser loginInfo = this.validLoginInfo(username, password);
+        SaHolder.getStorage().set(LOGIN_USER_KEY, loginInfo);
         StpUtil.login(loginInfo.getId());
+        StpUtil.getTokenSession().set(LOGIN_USER_KEY, loginInfo);
         return StpUtil.getTokenValue();
     }
 
@@ -65,10 +70,10 @@ public class LoginServiceImpl implements LoginService {
 
         // 验证密码
 
-        // 加密
-        String aesEncryptPwd = SaSecureUtil.aesEncrypt(user.getSalt(), password);
+        // 私密解密
+        String aesEncryptPwd = SaSecureUtil.rsaDecryptByPrivate(user.getSalt(), user.getPassword());
         // 比较
-        if (!aesEncryptPwd.equals(user.getPassword())){
+        if (!aesEncryptPwd.equals(password)){
             throw new UserException(StatusEnum.USER_PWD_ERROR);
         }
         return user;

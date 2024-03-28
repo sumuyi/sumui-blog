@@ -46,7 +46,7 @@ public class SysUserController {
     }
 
     @GetMapping("list")
-    @OperateLog(title = "用户列表",businessType = OperateTypeEnum.QUERY)
+//    @OperateLog(title = "用户列表",businessType = OperateTypeEnum.QUERY)
     public ReqResult<List<SysUser>> getUserList(){
 //        logService.getUUID();
         return ReqResult.ok(userMapper.selectList(new LambdaQueryWrapper<>()));

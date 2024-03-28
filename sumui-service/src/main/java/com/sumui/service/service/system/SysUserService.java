@@ -25,7 +25,7 @@ public interface SysUserService extends IService<SysUser> {
      * @param registerUserInfo
      * @return
      */
-    Boolean registerUserInfo(RegisterUserInfo registerUserInfo);
+    Boolean registerUserInfo(RegisterUserInfo registerUserInfo) throws Exception;
 
     Boolean userIsExist(String userName);
 }
