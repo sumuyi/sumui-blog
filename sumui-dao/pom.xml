@@ -25,6 +25,7 @@
         <dependency>
             <groupId>com.sumui</groupId>
             <artifactId>sumui-common</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

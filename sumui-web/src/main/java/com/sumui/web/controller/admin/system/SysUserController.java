@@ -1,5 +1,6 @@
 package com.sumui.web.controller.admin.system;
 
+import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.sumui.common.annotation.OperateLog;
@@ -45,6 +46,7 @@ public class SysUserController {
         return "当前会话是否登录：" + StpUtil.isLogin();
     }
 
+    @SaIgnore
     @GetMapping("list")
 //    @OperateLog(title = "用户列表",businessType = OperateTypeEnum.QUERY)
     public ReqResult<List<SysUser>> getUserList(){

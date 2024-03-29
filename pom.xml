@@ -35,31 +35,31 @@
         <dependencies>
 
             <!-- 本项目模块依赖 -->
-            <dependency>
-                <groupId>com.sumui</groupId>
-                <artifactId>sumui-web</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sumui</groupId>
-                <artifactId>sumui-service</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sumui</groupId>
-                <artifactId>sumui-dao</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sumui</groupId>
-                <artifactId>sumui-api</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sumui</groupId>
-                <artifactId>sumui-common</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>com.sumui</groupId>-->
+<!--                <artifactId>sumui-web</artifactId>-->
+<!--                <version>1.0-SNAPSHOT</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>com.sumui</groupId>-->
+<!--                <artifactId>sumui-service</artifactId>-->
+<!--                <version>1.0-SNAPSHOT</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>com.sumui</groupId>-->
+<!--                <artifactId>sumui-dao</artifactId>-->
+<!--                <version>1.0-SNAPSHOT</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>com.sumui</groupId>-->
+<!--                <artifactId>sumui-api</artifactId>-->
+<!--                <version>1.0-SNAPSHOT</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>com.sumui</groupId>-->
+<!--                <artifactId>sumui-common</artifactId>-->
+<!--                <version>1.0-SNAPSHOT</version>-->
+<!--            </dependency>-->
 
             <!-- =============================================== -->
 
@@ -266,34 +266,12 @@
         <commons-lang3.version>3.12.0</commons-lang3.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>aliyun-maven</id>
-            <name>aliyun-maven</name>
-            <url>https://maven.aliyun.com/nexus/content/groups/public/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
-
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>

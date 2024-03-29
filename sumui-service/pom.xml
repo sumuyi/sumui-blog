@@ -23,6 +23,7 @@
         <dependency>
             <groupId>com.sumui</groupId>
             <artifactId>sumui-dao</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>

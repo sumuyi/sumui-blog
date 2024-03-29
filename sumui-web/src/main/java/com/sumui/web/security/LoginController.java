@@ -1,6 +1,7 @@
 package com.sumui.web.security;
 
 import cn.dev33.satoken.annotation.SaIgnore;
+import cn.dev33.satoken.stp.StpUtil;
 import com.sumui.common.annotation.OperateLog;
 import com.sumui.common.constants.OperateTypeEnum;
 import com.sumui.common.model.ReqResult;
@@ -30,9 +31,14 @@ public class LoginController {
     private LoginService loginService;
 
 //    @OperateLog(title = "登录", businessType = OperateTypeEnum.LOGIN, excludeParamNames = { "password" })
-    @SaIgnore
     @PostMapping("/login")
     public ReqResult<String> login(@Validated @RequestBody LoginBody loginBody) {
         return ReqResult.ok(loginService.login(loginBody.getUsername(), loginBody.getPassword()));
+    }
+
+    @PostMapping("/logout")
+    public ReqResult<String> logout() {
+        StpUtil.logout();
+        return ReqResult.ok("登出成功！");
     }
 }

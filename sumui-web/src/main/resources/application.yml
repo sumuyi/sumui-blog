@@ -1,16 +1,41 @@
 server:
   port: 9090
   servlet:
-    session:
-      timeout: 5m # 设置session的有效期为五分钟
+    # 应用的访问路径
+    context-path: /
   compression:
     enabled: true # 开启返回结果压缩，减少传输耗时
     min-response-size: 2KB
+
+# 日志配置
+logging:
+  level:
+    com.sumui: debug
+    org.springframework: warn
 
 # 项目配置
 sumui:
   name: Sumui-Blog
   description: 一个基于Spring Boot和Vue的博客系统
+  version: 0.0.1
+  # 版权年份
+  copyrightYear: 2023
+  # 实例演示开关
+  demoEnabled: true
+  # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
+  profile: D:/sumuiBlog/uploadPath
+  # 获取ip地址开关
+  addressEnabled: false
+  # 验证码类型 math 数字计算 char 字符验证
+  captchaType: math
+
+# 用户配置
+user:
+  password:
+    # 密码最大错误次数
+    maxRetryCount: 5
+    # 密码锁定时间（默认10分钟）
+    lockTime: 10
 
 
 # 默认的数据库名
@@ -50,11 +75,11 @@ spring:
     # Redis数据库索引（默认为0）
     database: 1
     # Redis服务器地址
-    host: 192.168.153.128
+    host: 10.168.8.90
     # Redis服务器连接端口
     port: 6379
     # Redis服务器连接密码（默认为空）
-    password: 786586
+    password: 123456
     # 连接超时时间
     timeout: 10s
     lettuce:
@@ -110,7 +135,7 @@ sa-token:
   # token 名称（同时也是 cookie 名称）
   token-name: satoken
   # token 有效期（单位：秒） 默认30天，-1 代表永久有效
-  timeout: 2592000
+  timeout: 720
   # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
   active-timeout: -1
   # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
