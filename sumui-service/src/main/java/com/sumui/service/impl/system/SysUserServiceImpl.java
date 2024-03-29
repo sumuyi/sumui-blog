@@ -53,12 +53,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @return
      */
     @Override
-    public Boolean registerUserInfo(RegisterUserInfo registerUserInfo) {
+    public Boolean registerUserInfo(RegisterUserInfo registerUserInfo) throws Exception {
         // 校验用户信息
         this.verifyUserInfo(registerUserInfo);
         // 生成用户信息
         SysUser saveUser = this.convertToPojo(registerUserInfo);
         log.error("saveUser:{}",saveUser);
+
         return this.save(saveUser);
     }
 
@@ -67,35 +68,23 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
      * @param registerUserInfo
      * @return
      */
-    private SysUser convertToPojo(RegisterUserInfo registerUserInfo) {
+    private SysUser convertToPojo(RegisterUserInfo registerUserInfo) throws Exception {
         SysUser user = new SysUser();
         user.setId(IDUtils.nextId());
+        // todo 后面放开单独设置昵称
         user.setNickname(registerUserInfo.getNickname());
         user.setUsername(registerUserInfo.getUsername());
-        // 生成一对公钥和私钥，其中Map对象 (private=私钥, public=公钥)
-        try {
-            HashMap<String, String> rsaGenerateKeyPair = SaSecureUtil.rsaGenerateKeyPair();
-//            System.out.println(rsaGenerateKeyPair);
 
-            // 使用公钥加密
-            String ciphertext = SaSecureUtil.rsaEncryptByPublic(rsaGenerateKeyPair.get("public"), registerUserInfo.getPassword());
-//            System.out.println("公钥加密后：" + ciphertext);
+        HashMap<String, String> rsaGenerateKeyPair = SaSecureUtil.rsaGenerateKeyPair();
+        String publicKey = rsaGenerateKeyPair.get("public");
+        user.setPassword(SaSecureUtil.rsaEncryptByPublic(publicKey, registerUserInfo.getPassword()));
 
-            // 使用私钥解密
-//            String text2 = SaSecureUtil.rsaDecryptByPrivate(privateKey, ciphertext);
-
-            user.setPassword(ciphertext);
-            user.setSalt(rsaGenerateKeyPair.get("private"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-
+        user.setSalt(rsaGenerateKeyPair.get("private"));
         user.setMobile(registerUserInfo.getMobile());
         user.setEmail(registerUserInfo.getEmail());
         user.setAvatar(registerUserInfo.getAvatar());
         user.setSex(registerUserInfo.getSex());
-        user.setStatus(1);
+        user.setStatus(0);
         user.setIsSuper(0);
 //        user.setDeptId();
 //        user.setLoginIp();

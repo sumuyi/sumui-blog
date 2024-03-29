@@ -1,5 +1,6 @@
 package com.sumui.service.impl;
 
+import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
@@ -24,6 +25,8 @@ import javax.annotation.Resource;
 public class LoginServiceImpl implements LoginService {
     @Resource
     private SysUserService userService;
+
+    public static final String LOGIN_USER_KEY = "loginUser";
     /**
      * 登录接口
      *
@@ -32,13 +35,15 @@ public class LoginServiceImpl implements LoginService {
      * @return
      */
     @Override
-    public Boolean login(String username, String password) {
+    public String login(String username, String password) {
         // 校验
         log.error(username + "----" + password);
         // 获取数据库账号信息
         SysUser loginInfo = this.validLoginInfo(username, password);
+        SaHolder.getStorage().set(LOGIN_USER_KEY, loginInfo);
         StpUtil.login(loginInfo.getId());
-        return Boolean.TRUE;
+        StpUtil.getTokenSession().set(LOGIN_USER_KEY, loginInfo);
+        return StpUtil.getTokenValue();
     }
 
     private SysUser validLoginInfo(String username, String password) {
@@ -65,12 +70,10 @@ public class LoginServiceImpl implements LoginService {
 
         // 验证密码
 
-        // 私钥解密
-        String rsaDecryptPwd = SaSecureUtil.rsaDecryptByPrivate(user.getSalt(), user.getPassword());
-        log.error("参数密码:{}",password);
-        log.error("数据库密码:{}",rsaDecryptPwd);
+        // 私密解密
+        String aesEncryptPwd = SaSecureUtil.rsaDecryptByPrivate(user.getSalt(), user.getPassword());
         // 比较
-        if (!rsaDecryptPwd.equals(password)){
+        if (!aesEncryptPwd.equals(password)){
             throw new UserException(StatusEnum.USER_PWD_ERROR);
         }
         return user;
