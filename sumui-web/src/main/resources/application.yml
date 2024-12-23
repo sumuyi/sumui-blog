@@ -40,7 +40,7 @@ user:
 
 # 默认的数据库名
 database:
-  name: sumui_blog
+  name: sumui_blog_1
 
 spring:
   servlet:
@@ -75,7 +75,7 @@ spring:
     # Redis数据库索引（默认为0）
     database: 1
     # Redis服务器地址
-    host: 192.168.0.103
+    host: localhost
     # Redis服务器连接端口
     port: 6379
     # Redis服务器连接密码（默认为空）
@@ -162,3 +162,10 @@ knife4j:
   enable: true
   setting:
     language: zh-CN
+
+# 微信小程序 配置
+weixin:
+  appid: wx969c9da0c63cb838
+  secret: 75c264273f9f715fbbe16f8d2b725edf
+  url: https://api.weixin.qq.com/sns/jscode2session?grant_type=authorization_code
+

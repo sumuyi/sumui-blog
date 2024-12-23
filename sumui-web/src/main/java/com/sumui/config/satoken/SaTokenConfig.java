@@ -40,7 +40,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
                             .check(StpUtil::checkLogin);
                 })).addPathPatterns("/**")
                 // 排除不需要拦截的路径
-                .excludePathPatterns("/auth/login");
+                .excludePathPatterns("/auth/**");
     }
 
     @Bean
