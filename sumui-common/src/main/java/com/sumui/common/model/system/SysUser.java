@@ -32,6 +32,11 @@ public class SysUser implements Serializable {
     /**
      * 昵称
      */
+    private String openId;
+
+    /**
+     * 昵称
+     */
     private String nickname;
 
     /**

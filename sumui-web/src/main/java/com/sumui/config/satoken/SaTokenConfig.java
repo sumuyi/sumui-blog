@@ -1,7 +1,7 @@
 package com.sumui.config.satoken;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
-import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
+//import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
 import cn.dev33.satoken.router.SaRouter;
 import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.stp.StpUtil;
@@ -43,10 +43,10 @@ public class SaTokenConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/auth/**");
     }
 
-    @Bean
-    public StpLogic getStpLogicJwt() {
-        // Sa-Token 整合 jwt (简单模式)
-        return new StpLogicJwtForSimple();
-    }
+//    @Bean
+//    public StpLogic getStpLogicJwt() {
+//        // Sa-Token 整合 jwt (简单模式)
+//        return new StpLogicJwtForSimple();
+//    }
 
 }

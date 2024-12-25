@@ -125,9 +125,17 @@
                 <version>${hutool-all.version}</version>
             </dependency>
 
+            <!-- Sa-Token 权限认证，在线文档：https://sa-token.cc -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-spring-boot-starter</artifactId>
+                <version>${sa-token.version}</version>
+            </dependency>
+
+            <!-- Sa-Token 整合 Redis （使用 jackson 序列化方式） -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-redis-jackson</artifactId>
                 <version>${sa-token.version}</version>
             </dependency>
 
@@ -154,11 +162,6 @@
                 <groupId>com.baomidou</groupId>
                 <artifactId>lock4j-redisson-spring-boot-starter</artifactId>
                 <version>${lock4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-dao-redis-fastjson</artifactId>
-                <version>${sa-token.version}</version>
             </dependency>
             <!-- 提供Redis连接池 -->
             <dependency>
@@ -246,7 +249,7 @@
         <pagehelper.version>1.3.0</pagehelper.version>
         <hutool.version>5.8.14</hutool.version>
         <fastjson.version>1.2.71</fastjson.version>
-        <sa-token.version>1.34.0</sa-token.version>
+        <sa-token.version>1.39.0</sa-token.version>
         <redisson.version>3.18.0</redisson.version>
         <lock4j.version>2.2.3</lock4j.version>
         <commons-pool2.version>2.8.0</commons-pool2.version>

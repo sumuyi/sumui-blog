@@ -5,6 +5,7 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.sumui.common.model.system.SysUser">
         <id column="id" property="id" />
+        <result column="open_id" property="openId" />
         <result column="nickname" property="nickname" />
         <result column="username" property="username" />
         <result column="password" property="password" />
@@ -28,7 +29,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, nickname, username, password, mobile, email, avatar, sex, status, is_super, dept_id, login_ip, login_time, last_active_time, create_time, update_time, create_by, update_by, remark, del_flag
+        id, open_id, nickname, username, password, mobile, email, avatar, sex, status, is_super, dept_id, login_ip, login_time, last_active_time, create_time, update_time, create_by, update_by, remark, del_flag
     </sql>
 
 </mapper>

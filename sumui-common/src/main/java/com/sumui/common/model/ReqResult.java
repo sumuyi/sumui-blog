@@ -39,6 +39,10 @@ public class ReqResult<T> implements Serializable {
         this.result = t;
     }
 
+    public static <T> ReqResult<T> ok() {
+        return new ReqResult<T>();
+    }
+
     public static <T> ReqResult<T> ok(T t) {
         return new ReqResult<T>(t);
     }

@@ -72,6 +72,10 @@
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-spring-boot-starter</artifactId>
             </dependency>
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-redis-jackson</artifactId>
+        </dependency>
 
             <!-- Sa-Token 整合 jwt -->
             <dependency>
@@ -93,10 +97,6 @@
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>lock4j-redisson-spring-boot-starter</artifactId>
-            </dependency>
-            <dependency>
-                <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-dao-redis-fastjson</artifactId>
             </dependency>
             <!-- 提供Redis连接池 -->
             <dependency>
