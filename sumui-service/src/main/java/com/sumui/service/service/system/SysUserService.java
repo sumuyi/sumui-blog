@@ -28,4 +28,6 @@ public interface SysUserService extends IService<SysUser> {
     Boolean registerUserInfo(RegisterUserInfo registerUserInfo) throws Exception;
 
     Boolean userIsExist(String userName);
+
+    void wxUserInfo(String accessToken, String openId);
 }

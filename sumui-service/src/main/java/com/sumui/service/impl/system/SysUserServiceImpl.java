@@ -1,14 +1,18 @@
 package com.sumui.service.impl.system;
 
 import cn.dev33.satoken.secure.SaSecureUtil;
-import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.sumui.common.constants.StatusEnum;
 import com.sumui.common.exception.ApiException;
+import com.sumui.common.model.ReqResult;
 import com.sumui.common.model.security.RegisterUserInfo;
 import com.sumui.common.model.system.SysUser;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -133,5 +137,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         LambdaQueryWrapper<SysUser> query = Wrappers.lambdaQuery();
         query.eq(SysUser::getUsername, userName);
         return baseMapper.selectCount(query) >= 1;
+    }
+
+    @Override
+    public void wxUserInfo(String accessToken, String openId) {
+//        String url = wxUrl + "&appid=" + accessToken + "&secret=" + openId + "&js_code=" + code;
+//        try (HttpResponse response = HttpUtil.createGet(url).execute()) {
+//            String resp = response.body();
+//            log.info("resp:{}", resp);
+//            JSONObject parsedObj = JSONUtil.parseObj(resp);
+//            if (ObjectUtil.isEmpty(parsedObj)) {
+//                return ReqResult.fail(StatusEnum.FAIL, "获取用户信息失败");
+//            }
+//        }
     }
 }

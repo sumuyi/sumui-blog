@@ -41,6 +41,8 @@ user:
 # 默认的数据库名
 database:
   name: sumui_demo
+  ip: 121.37.202.66
+  port: 5206
 
 spring:
   servlet:
@@ -52,9 +54,9 @@ spring:
   datasource: #单数据源
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://localhost:3306/${database.name}?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://${database.ip}:${database.port}/${database.name}?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
-    password: mysql_flk
+    password: mysql_0720
 
     #DruidDataSource自有属性
     filters: stat
@@ -79,7 +81,7 @@ spring:
     # Redis服务器连接端口
     port: 6379
     # Redis服务器连接密码（默认为空）
-    password: 123456
+    password: redis_0720
     # 连接超时时间
     timeout: 10s
     lettuce:
@@ -168,4 +170,5 @@ weixin:
   appid: wx969c9da0c63cb838
   secret: 75c264273f9f715fbbe16f8d2b725edf
   url: https://api.weixin.qq.com/sns/jscode2session?grant_type=authorization_code
+  access_token_url: https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential
 

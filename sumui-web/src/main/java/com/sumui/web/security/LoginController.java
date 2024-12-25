@@ -45,6 +45,8 @@ public class LoginController {
     private String wxSecret;
     @Value("${weixin.url}")
     private String wxUrl;
+    @Value("${weixin.access_token_url}")
+    private String accessTokenUrl;
 
     @Resource
     private LoginService loginService;
@@ -68,36 +70,56 @@ public class LoginController {
     public ReqResult<Object> wxLogin(@RequestParam String code) {
         log.info("code:{}",code);
         String url = wxUrl + "&appid=" + wxAppid + "&secret=" + wxSecret + "&js_code=" + code;
+        JSONObject parsedObj;
         try (HttpResponse response = HttpUtil.createGet(url).execute()) {
             String resp = response.body();
             log.info("resp:{}", resp);
-            JSONObject parsedObj = JSONUtil.parseObj(resp);
+            parsedObj = JSONUtil.parseObj(resp);
             if (ObjectUtil.isEmpty(parsedObj)) {
                 return ReqResult.fail(StatusEnum.FAIL, "获取用户信息失败");
             }
-            String openId = parsedObj.getStr("openid");
-            if (StrUtil.isBlank(openId)) {
-                return ReqResult.fail("登录失败！");
-            }
-            // todo 向数据库查询用户信息，如果不存在则创建新用户
-            SysUser user = userService.lambdaQuery().eq(SysUser::getOpenId, openId).one();
-            if (user == null) {
-                user = new SysUser();
-                user.setId(IDUtils.nextId());
-                user.setOpenId(openId);
-                userService.save(user);
-            }
-            StpUtil.login(user.getId());
-            SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
-
-            // 构建返回值
-            return ReqResult.ok(LoginUserVO.builder()
-                    .userId(tokenInfo.getLoginId().toString())
-                    .saToken(tokenInfo.getTokenValue())
-                    .expireTime(tokenInfo.getTokenTimeout())
-                    .build()
-            );
         }
+
+        String openId = parsedObj.getStr("openid");
+        if (StrUtil.isBlank(openId)) {
+            return ReqResult.fail("登录失败！");
+        }
+
+//        String accessTokenUrl1 = accessTokenUrl + "&appid=" + wxAppid + "&secret=" + wxSecret;
+//        JSONObject accessTokenJSON;
+//        try (HttpResponse accessTokenRes = HttpUtil.createGet(accessTokenUrl1).execute()) {
+//            String resp = accessTokenRes.body();
+//            log.info("accessTokenRes:{}", accessTokenRes);
+//            accessTokenJSON = JSONUtil.parseObj(accessTokenRes);
+//            if (ObjectUtil.isEmpty(accessTokenJSON)) {
+//                return ReqResult.fail(StatusEnum.FAIL, "获取用户信息失败");
+//            }
+//        }
+//
+//        String accessToken = accessTokenJSON.getStr("access_token");
+//        if (StrUtil.isBlank(accessToken)) {
+//            return ReqResult.fail("登录失败！");
+//        }
+
+        // todo 向数据库查询用户信息，如果不存在则创建新用户
+        SysUser user = userService.lambdaQuery().eq(SysUser::getOpenId, openId).one();
+        if (user == null) {
+            user = new SysUser();
+            user.setId(IDUtils.nextId());
+            user.setOpenId(openId);
+            userService.save(user);
+        }
+//        userService.wxUserInfo(accessToken,openId);
+        StpUtil.login(user.getId());
+        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+
+        // 构建返回值
+        return ReqResult.ok(LoginUserVO.builder()
+                .userId(tokenInfo.getLoginId().toString())
+                .saToken(tokenInfo.getTokenValue())
+                .expireTime(tokenInfo.getTokenTimeout())
+                .build()
+        );
     }
 
     // 查询登录状态  ---- http://localhost:8081/acc/isLogin
