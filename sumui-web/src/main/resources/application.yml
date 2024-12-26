@@ -166,7 +166,7 @@ knife4j:
     language: zh-CN
 
 # 微信小程序 配置
-weixin:
+wechat:
   appid: wx969c9da0c63cb838
   secret: 75c264273f9f715fbbe16f8d2b725edf
   url: https://api.weixin.qq.com/sns/jscode2session?grant_type=authorization_code

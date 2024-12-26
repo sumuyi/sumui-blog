@@ -18,4 +18,9 @@ public class LoginUserVO implements Serializable {
     private String userId;
     private String saToken;
     private Long expireTime;
+    private String userName;
+    private String nickname;
+    private String avatar;
+    private String email;
+    private String mobile;
 }
