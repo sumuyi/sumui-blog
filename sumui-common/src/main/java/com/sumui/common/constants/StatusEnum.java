@@ -79,27 +79,35 @@ public enum StatusEnum {
     // 待审核
     USER_NOT_AUDIT(400_500_001, "用户未审核"),
     USER_PWD_ERROR(400_500_002, "用户名密码错误"),
-    USER_OR_PWD_EMPTY(400_500_003, "用户名or密码不能为空")
+    USER_OR_PWD_EMPTY(400_500_003, "用户名or密码不能为空"),
+
+    // 账单相关错误码 (3000-3999)
+    BILL_AMOUNT_INVALID(3000, "账单金额无效"),
+    BILL_DATE_INVALID(3001, "账单日期无效"),
+    BILL_CATEGORY_EMPTY(3002, "账单类别不能为空"),
+    BILL_TYPE_INVALID(3003, "账单类型无效"),
+    BILL_NOT_FOUND(3004, "账单记录不存在"),
+    BILL_SAVE_ERROR(3005, "保存账单失败");
     ;
 
-    private int code;
+    private final Integer code;
 
-    private String msg;
+    private final String msg;
 
-    StatusEnum(int code, String msg) {
+    StatusEnum(Integer code, String msg) {
         this.code = code;
         this.msg = msg;
     }
 
-    public static boolean is5xx(int code) {
+    public static boolean is5xx(Integer code) {
         return code % 1000_000 / 1000 >= 500;
     }
 
-    public static boolean is403(int code) {
+    public static boolean is403(Integer code) {
         return code % 1000_000 / 1000 == 403;
     }
 
-    public static boolean is4xx(int code) {
+    public static boolean is4xx(Integer code) {
         return code % 1000_000 / 1000 < 500;
     }
 }

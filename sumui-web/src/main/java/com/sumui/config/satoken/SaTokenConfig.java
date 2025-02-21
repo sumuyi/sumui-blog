@@ -1,5 +1,6 @@
 package com.sumui.config.satoken;
 
+import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.interceptor.SaInterceptor;
 //import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
 import cn.dev33.satoken.router.SaRouter;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -36,11 +38,20 @@ public class SaTokenConfig implements WebMvcConfigurer {
                     SaRouter
                             // 获取所有的
                             .match("/**")
-                            // 对未排除的路径进行检查
+                            // 获取请求路径演示
+                            .notMatch(req -> {
+                                String path = SaHolder.getRequest().getRequestPath();
+                                String method = SaHolder.getRequest().getMethod();
+                                log.debug("当前请求路径: {} {}", method, path); // 打印请求信息
+                                return false; // 保持原有排除逻辑
+                            })
+                            .notMatch("/auth/**")             // 排除认证相关路径
+                            .notMatch("/bill/**")             // 排除账单相关路径
+                            .notMatch("/doc.html")            // 排除文档接口
+                            .notMatch("/webjars/**")          // 排除静态资源
+                            .notMatch("/swagger-resources")   // 排除 Swagger 资源
                             .check(StpUtil::checkLogin);
-                })).addPathPatterns("/**")
-                // 排除不需要拦截的路径
-                .excludePathPatterns("/auth/**");
+                })).addPathPatterns("/**");
     }
 
 //    @Bean
@@ -48,5 +59,25 @@ public class SaTokenConfig implements WebMvcConfigurer {
 //        // Sa-Token 整合 jwt (简单模式)
 //        return new StpLogicJwtForSimple();
 //    }
+
+    /**
+     * 跨域配置
+     * @param registry
+     */
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        // 配置全局跨域
+        registry.addMapping("/**")
+            // 允许所有来源（生产环境建议配置具体域名）
+            .allowedOriginPatterns("*")
+            // 允许的请求方法
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+            // 允许的请求头
+            .allowedHeaders("*")
+            // 有效时间（单位：秒）
+            .maxAge(3600)
+            // 允许携带凭证（如需要cookie验证要设置为true）
+            .allowCredentials(true);
+    }
 
 }

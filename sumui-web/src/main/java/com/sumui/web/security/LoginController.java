@@ -1,20 +1,10 @@
 package com.sumui.web.security;
 
-import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.RandomUtil;
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.http.HttpRequest;
-import cn.hutool.http.HttpResponse;
-import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.sumui.common.annotation.OperateLog;
-import com.sumui.common.constants.OperateTypeEnum;
-import com.sumui.common.constants.StatusEnum;
 import com.sumui.common.model.ReqResult;
 import com.sumui.common.model.constants.WXConstant;
 import com.sumui.common.model.security.LoginBody;
@@ -23,16 +13,14 @@ import com.sumui.common.model.security.WxLoginDTO;
 import com.sumui.common.model.system.SysUser;
 import com.sumui.common.utils.uuid.IDUtils;
 import com.sumui.common.utils.wechat.WechatUtil;
-import com.sumui.service.service.LoginService;
-import com.sumui.service.service.system.SysUserService;
+import com.sumui.service.LoginService;
+import com.sumui.service.impl.system.SysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Map;
 
 /**
  * 登录入口

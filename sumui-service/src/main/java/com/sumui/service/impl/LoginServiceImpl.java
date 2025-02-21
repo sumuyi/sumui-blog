@@ -8,8 +8,8 @@ import com.sumui.common.constants.StatusEnum;
 import com.sumui.common.constants.UserStatus;
 import com.sumui.common.exception.UserException;
 import com.sumui.common.model.system.SysUser;
-import com.sumui.service.service.LoginService;
-import com.sumui.service.service.system.SysUserService;
+import com.sumui.service.LoginService;
+import com.sumui.service.impl.system.SysUserService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 

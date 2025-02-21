@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sumui.dao.mapper.mapper.BillTagsMapper">
+
+    <resultMap id="BaseResultMap" type="com.sumui.common.model.finance.BillTags">
+            <id property="billId" column="bill_id" />
+            <id property="tagId" column="tag_id" />
+            <result property="createdAt" column="created_at" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        bill_id,tag_id,created_at
+    </sql>
+</mapper>

@@ -32,6 +32,17 @@ public class GlobalExceptionHandler {
     final String REGX_DUPLICATE_KEY = "Duplicate entry '(.*)' for key '(.*)'";
 
     /**
+     * 业务异常
+     * @param e 异常
+     * @return 统一返回结果
+     */
+    @ExceptionHandler(BizException.class)
+    public ReqResult<Void> handleBizException(BizException e) {
+        log.error("业务异常：{}", e.getMessage());
+        return ReqResult.fail(e.getCode(), e.getMessage());
+    }
+
+    /**
      * 基础异常处理
      */
     @ExceptionHandler(ApiException.class)

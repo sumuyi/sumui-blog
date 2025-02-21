@@ -41,8 +41,8 @@ user:
 # 默认的数据库名
 database:
   name: sumui_demo
-  ip: 121.37.202.66
-  port: 5206
+  ip: 192.168.5.54
+  port: 3306
 
 spring:
   servlet:
@@ -77,7 +77,7 @@ spring:
     # Redis数据库索引（默认为0）
     database: 1
     # Redis服务器地址
-    host: localhost
+    host: 192.168.5.54
     # Redis服务器连接端口
     port: 6379
     # Redis服务器连接密码（默认为空）

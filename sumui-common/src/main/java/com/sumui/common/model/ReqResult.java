@@ -15,11 +15,11 @@ import java.io.Serializable;
 @Data
 public class ReqResult<T> implements Serializable {
     private static final long serialVersionUID = 1L;
-    @ApiModelProperty(value = "返回结果说明", required = true)
-    private Status status;
 
-    @ApiModelProperty(value = "返回的实体结果", required = true)
+    private Status status;
     private T result;
+    private Integer code;
+    private String message;
 
 
     public ReqResult() {
@@ -40,23 +40,39 @@ public class ReqResult<T> implements Serializable {
     }
 
     public static <T> ReqResult<T> ok() {
-        return new ReqResult<T>();
+        return ReqResult.ok(StatusEnum.SUCCESS);
+    }
+
+    public static <T> ReqResult<T> ok(StatusEnum statusEnum) {
+        ReqResult<T> result = new ReqResult<>();
+        result.setCode(statusEnum.getCode());
+        result.setMessage(statusEnum.getMsg());
+        return result;
     }
 
     public static <T> ReqResult<T> ok(T t) {
-        return new ReqResult<T>(t);
+        ReqResult<T> result = new ReqResult<>();
+        result.setCode(StatusEnum.SUCCESS.getCode());
+        result.setMessage(StatusEnum.SUCCESS.getMsg());
+        result.setResult(t);
+        return result;
     }
 
     public static <T> ReqResult<T> fail(T t) {
         return new ReqResult<T>(StatusEnum.FAIL,t);
     }
 
-    public static <T> ReqResult<T> fail(StatusEnum status, Object... args) {
-        return new ReqResult<>(Status.newStatus(status, args));
+    public static <T> ReqResult<T> fail(StatusEnum StatusEnum) {
+        ReqResult<T> result = new ReqResult<>();
+        result.setCode(StatusEnum.getCode());
+        result.setMessage(StatusEnum.getMsg());
+        return result;
     }
-
-    public static <T> ReqResult<T> fail(Status status) {
-        return new ReqResult<>(status);
+    
+    public static <T> ReqResult<T> fail(Integer code, String message) {
+        ReqResult<T> result = new ReqResult<>();
+        result.setCode(code);
+        result.setMessage(message);
+        return result;
     }
-
 }

@@ -1,4 +1,4 @@
-package com.sumui.service.service;
+package com.sumui.service;
 
 /**
  * 登录业务 接口层

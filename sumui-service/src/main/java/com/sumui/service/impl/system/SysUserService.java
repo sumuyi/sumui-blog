@@ -1,4 +1,4 @@
-package com.sumui.service.service.system;
+package com.sumui.service.impl.system;
 
 import com.sumui.common.model.security.RegisterUserInfo;
 import com.sumui.common.model.system.SysUser;
