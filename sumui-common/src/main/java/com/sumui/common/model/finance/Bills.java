@@ -23,6 +23,11 @@ public class Bills implements Serializable {
     private Long id;
 
     /**
+     * 用户ID
+     */
+    private Long userId;
+
+    /**
      * 账本ID
      */
     private Long bookId;

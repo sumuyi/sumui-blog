@@ -2,6 +2,9 @@ package com.sumui.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.LocalDateTimeUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -17,7 +20,11 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
 * @author flk-sunl
@@ -67,15 +74,56 @@ public class BillsServiceImpl extends ServiceImpl<BillsMapper, Bills> implements
      * @return
      */
     @Override
-    public List<BillDTO> getBillList(Long bookId) {
+    public Map<String, List<BillDTO>> getBillList(Long bookId) {
         if (bookId == null) {
-            return ListUtil.empty();
+            return MapUtil.empty();
         }
         List<Bills> billsList = this.lambdaQuery().eq(Bills::getBookId, bookId).list();
         if (CollectionUtil.isNotEmpty(billsList)) {
-            return billConverter.toDTOList(billsList);
+            List<BillDTO> dtoList = billConverter.toDTOList(billsList);
+            // todo 这里用户先写死
+            dtoList.forEach(vo -> {
+                if (vo.getUserId() != null && vo.getUserId() == 1L) {
+                    vo.setUserName("孙罗");
+                }
+                if (vo.getUserId()!= null && vo.getUserId() == 2L) {
+                    vo.setUserName("关甜");
+                }
+            });
+            // 按日期分组 并降序
+            dtoList.sort((o1, o2) -> o2.getBillDate().compareTo(o1.getBillDate()));
+            // key指定日期格式
+            return dtoList.stream().collect(Collectors.groupingBy(vo -> DateUtil.format(vo.getBillDate(), "yyyy-MM-dd")));
         }
-        return ListUtil.of();
+        return MapUtil.empty();
+    }
+
+    @Override
+    public Map<String, Object> getBillStatistics(Long bookId, String month) {
+        // 参数判断
+        if (bookId == null || StrUtil.isBlank(month)) {
+            throw new BizException(StatusEnum.ILLEGAL_ARGUMENTS);
+        }
+        // 转换当月第一天和最后一天
+        String startDate = month + "-01";
+        String endDate = month + "-" + LocalDate.parse(startDate).lengthOfMonth();
+        // todo 暂时直接通过sql判断当月记录，后期单独一张统计表进行维护
+        List<Bills> list = this.lambdaQuery().eq(Bills::getBookId, bookId)
+                .ge(Bills::getBillDate, startDate)
+                .le(Bills::getBillDate, endDate)
+                .list();
+        if (CollectionUtil.isEmpty(list)) {
+            return MapUtil.newHashMap();
+        }
+        // 统计支出和收入金额
+        Map<String, Object> resultMap = MapUtil.newHashMap();
+        BigDecimal expenseAmount = list.stream().filter(vo -> vo.getType() == 1)
+                .map(Bills::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal incomeAmount = list.stream().filter(vo -> vo.getType() == 0)
+               .map(Bills::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
+        resultMap.put("totalExpense", expenseAmount);
+        resultMap.put("totalIncome", incomeAmount);
+        return resultMap;
     }
 
 

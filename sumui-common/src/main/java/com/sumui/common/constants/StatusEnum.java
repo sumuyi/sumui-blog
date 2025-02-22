@@ -87,7 +87,7 @@ public enum StatusEnum {
     BILL_CATEGORY_EMPTY(3002, "账单类别不能为空"),
     BILL_TYPE_INVALID(3003, "账单类型无效"),
     BILL_NOT_FOUND(3004, "账单记录不存在"),
-    BILL_SAVE_ERROR(3005, "保存账单失败");
+    BILL_SAVE_ERROR(3005, "保存账单失败")
     ;
 
     private final Integer code;

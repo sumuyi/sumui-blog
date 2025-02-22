@@ -11,6 +11,8 @@ import java.util.Date;
 @Builder
 public class BillDTO implements Serializable {
     private Long id;
+    private Long userId;
+    private String userName;
     private BigDecimal amount;      // 金额
     private Long categoryId;        // 账单类别
     private String description;     // 描述
