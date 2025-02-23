@@ -32,10 +32,10 @@ public class BillController {
     }
 
     @ApiOperation("获取账单列表-按天分组")
-    @GetMapping("/list/{bookId}")
-    public ReqResult<Map<String, List<BillDTO>>> getBillList(@PathVariable Long bookId) {
+    @GetMapping("/list/{bookId}/{month}")
+    public ReqResult<Map<String, List<BillDTO>>> getBillList(@PathVariable Long bookId, @PathVariable String month) {
         try {
-            Map<String, List<BillDTO>> billList = billsService.getBillList(bookId);
+            Map<String, List<BillDTO>> billList = billsService.getBillList(bookId, month);
             return ReqResult.ok(billList);
         } catch (Exception e) {
             return ReqResult.fail(StatusEnum.BILL_SAVE_ERROR);

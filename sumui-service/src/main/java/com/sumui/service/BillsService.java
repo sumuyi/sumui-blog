@@ -1,11 +1,9 @@
 package com.sumui.service;
 
-import com.sumui.common.constants.StatusEnum;
 import com.sumui.common.model.dto.BillDTO;
 import com.sumui.common.model.finance.Bills;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +15,7 @@ import java.util.Map;
 public interface BillsService extends IService<Bills> {
     void saveBill(BillDTO billDTO);
 
-    Map<String, List<BillDTO>> getBillList(Long bookId);
+    Map<String, List<BillDTO>> getBillList(Long bookId, String month);
 
     Map<String, Object> getBillStatistics(Long bookId, String month);
 }

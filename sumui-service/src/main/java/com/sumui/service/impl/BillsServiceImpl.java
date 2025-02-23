@@ -1,9 +1,7 @@
 package com.sumui.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
-import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -71,14 +68,22 @@ public class BillsServiceImpl extends ServiceImpl<BillsMapper, Bills> implements
 
     /**
      * @param bookId
+     * @param month
      * @return
      */
     @Override
-    public Map<String, List<BillDTO>> getBillList(Long bookId) {
-        if (bookId == null) {
-            return MapUtil.empty();
+    public Map<String, List<BillDTO>> getBillList(Long bookId, String month) {
+        if (bookId == null || StrUtil.isEmpty(month)) {
+            throw new BizException(StatusEnum.ILLEGAL_ARGUMENTS);
         }
-        List<Bills> billsList = this.lambdaQuery().eq(Bills::getBookId, bookId).list();
+        // 转换当月第一天和最后一天
+        String startDate = month + "-01";
+        String endDate = month + "-" + LocalDate.parse(startDate).lengthOfMonth();
+        List<Bills> billsList = this.lambdaQuery()
+                .eq(Bills::getBookId, bookId)
+                .ge(Bills::getBillDate, startDate)
+                .le(Bills::getBillDate, endDate)
+                .list();
         if (CollectionUtil.isNotEmpty(billsList)) {
             List<BillDTO> dtoList = billConverter.toDTOList(billsList);
             // todo 这里用户先写死
