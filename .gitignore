@@ -33,3 +33,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/HahLife/uni_modules/
+/HahLife/unpackage/
+/HahLife/node_modules/
