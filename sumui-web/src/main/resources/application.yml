@@ -13,6 +13,7 @@ logging:
     com.sumui: debug
     org.springframework: warn
 
+
 # 项目配置
 sumui:
   name: Sumui-Blog

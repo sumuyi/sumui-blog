@@ -1,5 +1,13 @@
 <template>
 	<view class="page-container">
+		<!-- 头部 -->
+    <view class="flex-between">
+      <uv-text  text="默认账本"></uv-text>
+      <view class="current-month-str flex-between" @click="showPopupDate">
+        {{ currentMonthStr }}
+        <uv-icon name="arrow-down-fill" color="black"></uv-icon>
+      </view>
+    </view>
 		<!-- 顶部统计栏 -->
     <view class="flex-between">
       <view class="statistic-card pd-tb20">
@@ -40,14 +48,45 @@
         </view>
       </view>
     </view>
+
+    <!-- 月份弹框 -->
+    <uv-popup ref="popupDate" mode="bottom" :close-on-click-overlay="false" round="16">
+			<view class="month-select-container">
+        <!-- 顶部标题 -->
+        <uv-text text="请选择日期" bold align="center"></uv-text>
+				<!-- 月份选择器 -->
+        <view class="month-selector">
+            <view v-for="(monthName, monthIndex) in monthMap" :key="monthIndex" class="month-item" :class="{ 'active': currentMonthIndex === monthIndex }" @click="selectMonth(monthIndex)">
+                {{ monthName }}
+            </view>
+        </view>
+        <!-- 底部操作按钮 取消 确定 -->
+        <view class="flex-between btn-box">
+            <view class="btn cancel-btn" @click="cancel">取消</view>
+            <view class="btn confirm-btn" @click="confirm">确定</view>
+        </view>
+			</view>
+		</uv-popup>
 		
+    <view class="fixed-bottom-right-button">
+      <uv-button icon="plus" @click="showPopupAddBill" shape="circle" color="#3c9cff" iconColor="#fff"></uv-button>
+    </view>
+
 	</view>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, nextTick } from 'vue'
 import { billApi } from '@/api/bills'
 import { timeFormat } from '@/uni_modules/uv-ui-tools/libs/function/index.js';
+
+// 打开添加账单弹框
+const showPopupAddBill = () => {
+  console.log('点击了新增账单按钮');
+  uni.navigateTo({
+    url: '/pages/finance/addBill?id=1&name=uniapp'
+  });
+}
 
 const billList = ref([])
 // 添加新的响应式变量
@@ -57,6 +96,24 @@ const statistics = ref({
   balance: 0
 })
 const currentMonth = ref(timeFormat(new Date().getTime(), "yyyy-mm"))
+const currentMonthStr = ref(timeFormat(new Date().getTime(), "yyyy年mm月"))
+// 月份 map
+const monthMap = {
+    1: '一月',
+    2: '二月',
+    3: '三月',
+    4: '四月',
+    5: '五月',
+    6: '六月',
+    7: '七月',
+    8: '八月',
+    9: '九月',
+    10: '十月',
+    11: '十一月',
+    12: '十二月'
+}
+// 当前选中的月份索引
+const currentMonthIndex = ref(new Date().getMonth() + 1)
 
 // 分类数据
 const categories = [
@@ -74,11 +131,11 @@ const categories = [
 // 获取账单数据
 const getFinance = async () => {
 	try {
-		let response = await billApi.getList(1, '2025-02')
+		let response = await billApi.getList(1, currentMonth.value)
 		
     // 添加空值检查
-    if (!response) {
-      bills.value = []
+    if (!response || response.length === 0) {
+      billList.value = {}
       return
     }
 
@@ -152,6 +209,37 @@ const getDayLabel = (dateStr) => {
   return ''
 }
 
+// 显示日期选择器
+const popupDate = ref(null)
+const showPopupDate = async () => {
+  await nextTick()
+  if (popupDate.value) {
+    console.log('当前月份', currentMonthIndex.value);
+    popupDate.value.open()
+  }
+}
+// 日期选择器回调函数
+const cancel = () => {
+  console.log('cancel');
+  popupDate.value.close()
+}
+const confirm = () => {
+  console.log('confirm');
+  currentMonth.value = new Date().getFullYear() + '-' + (currentMonthIndex.value < 10 ? '0' + currentMonthIndex.value : currentMonthIndex.value)
+  currentMonthStr.value = new Date().getFullYear() + '年' + (currentMonthIndex.value < 10? '0' + currentMonthIndex.value : currentMonthIndex.value) + '月'
+  getFinance()
+  fetchStatistics()
+  popupDate.value.close()
+}
+
+// 选择月份
+const selectMonth = (index) => {
+  console.log('选中了', index);
+  
+  currentMonthIndex.value = index
+  // 可以在这里添加更新数据的逻辑
+}
+
 onMounted(() => {
 	getFinance()
   fetchStatistics()
@@ -159,6 +247,59 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+.current-month-str {
+  color: black;
+  font-size: 28rpx;
+  font-weight: bold;
+  background: #999;
+  padding: 10rpx 20rpx;
+  border-radius: 30rpx;
+}
+/* 新增月份选择器样式 */
+.month-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx; /* 月份项之间的间距 */
+  margin: 40rpx 0;
+}
+
+.month-item {
+  flex: 0 0 calc(25% - 10rpx); /* 一行显示4个，减去间距 */
+  text-align: center;
+  padding: 10rpx;
+  background-color: #e6f7ff; /* 淡蓝色背景 */
+  
+  border-radius: 8rpx;
+  box-sizing: border-box;
+}
+
+.month-item.active {
+  background-color: #1890ff; /* 选中时的蓝色背景 */
+  color: #fff; /* 选中时的白色字体 */
+}
+
+.btn-box {
+	.btn {
+    flex: 1;
+    text-align: center;
+    padding: 20rpx;
+    margin: 0 10rpx;
+    border-radius: 40rpx;
+    border: 1rpx solid #ccc;
+  }
+  .confirm-btn {
+    background-color: #1890ff;
+    color: #fff;
+  }
+}
+::v-deep.uv-popup {
+  z-index: 1000 !important;
+}
+.month-select-container {
+  min-height: 300rpx;
+  padding: 40rpx;
+  background-color: #fff;
+}
 .su-card {
 	border-radius: 16rpx;
 }
@@ -349,4 +490,12 @@ onMounted(() => {
 	padding: 16rpx 0;
 }
 
+.fixed-bottom-right-button {
+    position: fixed;
+    bottom: 200rpx;
+    right: 20rpx;
+    width: 80rpx;
+    height: 80rpx;
+    border-radius: 50%;
+}
 </style>
