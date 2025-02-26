@@ -21,6 +21,8 @@ public class Books implements Serializable {
     @TableId(type = IdType.AUTO)
     private Long id;
 
+    private String userId;
+
     /**
      * 
      */
@@ -49,11 +51,13 @@ public class Books implements Serializable {
     /**
      * 
      */
+    private String createdBy;
     private Date createdAt;
 
     /**
      * 
      */
+    private String updatedBy;
     private Date updatedAt;
 
     private Integer delFlag;

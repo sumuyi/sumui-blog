@@ -2,7 +2,7 @@
 	<view class="page-container">
 		<!-- 头部 -->
     <view class="flex-between">
-      <uv-text  text="默认账本"></uv-text>
+      <uv-text :text="currentBookName" @click="showPopupBookList"></uv-text>
       <view class="current-month-str flex-between" @click="showPopupDate">
         {{ currentMonthStr }}
         <uv-icon name="arrow-down-fill" color="black"></uv-icon>
@@ -67,6 +67,9 @@
         </view>
 			</view>
 		</uv-popup>
+
+    <!-- 账本弹框 -->
+    <uv-picker ref="pickerUserRef" :columns="bookList" keyName="name" @confirm="confirmBook"></uv-picker>
 		
     <view class="fixed-bottom-right-button">
       <uv-button icon="plus" @click="showPopupAddBill" shape="circle" color="#3c9cff" iconColor="#fff"></uv-button>
@@ -78,7 +81,44 @@
 <script setup>
 import { onMounted, ref, nextTick } from 'vue'
 import { billApi } from '@/api/bills'
+import { bookApi } from '@/api/books'
 import { timeFormat } from '@/uni_modules/uv-ui-tools/libs/function/index.js';
+
+// 获取用户账本列表
+const currentBookName = ref('默认账本')
+const currentBookId = ref(null)
+const bookList = ref([])
+const getBookList = async () => {
+  try {
+    let response = await bookApi.getList()
+    console.log('userBooks', response)
+    bookList.value = response
+    if (response && response.length > 0) {
+      currentBookId.value = response[0].id
+      currentBookName.value = response[0].name
+      
+      getFinance()
+      fetchStatistics()
+    }
+  } catch (error) {
+    console.error('获取账本列表失败', error)
+  }
+}
+// 打开账本列表
+const pickerUserRef = ref(null)
+const showPopupBookList = async () => {
+  await nextTick()
+  if (pickerUserRef.value) {
+    console.log('当前账本', currentBookName.value);
+    pickerUserRef.value.open()
+  }
+}
+// 确认选择账本
+const confirmBook = (e) => {
+  console.log('confirm', e);
+  currentBookId.value = e.value[0].id
+  currentBookName.value = e.value[0].name
+}
 
 // 打开添加账单弹框
 const showPopupAddBill = () => {
@@ -131,7 +171,7 @@ const categories = [
 // 获取账单数据
 const getFinance = async () => {
 	try {
-		let response = await billApi.getList(1, currentMonth.value)
+		let response = await billApi.getList(currentBookId.value, currentMonth.value)
 		
     // 添加空值检查
     if (!response || response.length === 0) {
@@ -172,7 +212,7 @@ const getFinance = async () => {
 // 新增获取统计数据的独立函数
 const fetchStatistics = async () => {
   try {
-    const statsResponse = await billApi.getStatistics(1, currentMonth.value)
+    const statsResponse = await billApi.getStatistics(currentBookId.value, currentMonth.value)
     if (statsResponse) {
       statistics.value = {
         totalExpense: statsResponse.totalExpense || 0,
@@ -241,8 +281,7 @@ const selectMonth = (index) => {
 }
 
 onMounted(() => {
-	getFinance()
-  fetchStatistics()
+  getBookList()
 })
 </script>
 

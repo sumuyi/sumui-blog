@@ -1,5 +1,6 @@
 package com.sumui.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
@@ -7,12 +8,16 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sumui.common.constants.StatusEnum;
+import com.sumui.common.model.system.SysUser;
+import com.sumui.service.BookFamilyUsersService;
 import com.sumui.service.convert.BillConverter;
 import com.sumui.common.exception.BizException;
 import com.sumui.common.model.dto.BillDTO;
 import com.sumui.common.model.finance.Bills;
 import com.sumui.dao.mapper.finance.BillsMapper;
 import com.sumui.service.BillsService;
+import com.sumui.service.impl.system.SysUserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -30,10 +35,12 @@ import java.util.stream.Collectors;
 */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class BillsServiceImpl extends ServiceImpl<BillsMapper, Bills> implements BillsService{
 
-    @Resource
-    private BillConverter billConverter;
+    private final BillConverter billConverter;
+    private final SysUserService sysUserService;
+    private final BookFamilyUsersService bookFamilyUsersService;
 
     /**
      * 添加账单
@@ -54,10 +61,8 @@ public class BillsServiceImpl extends ServiceImpl<BillsMapper, Bills> implements
         try {
             Bills bill = billConverter.toBill(billDTO);
             bill.setId(IdUtil.getSnowflakeNextId());
-            // todo 默认账本ID为1
-            bill.setBookId(1L);
             bill.setPaymentMethod("wechat");
-            bill.setCreatedBy(1L);
+            bill.setCreatedBy(StpUtil.getLoginIdAsLong());
             log.error("bill:{}", bill);
             this.save(bill);
         } catch (Exception e) {
@@ -79,20 +84,29 @@ public class BillsServiceImpl extends ServiceImpl<BillsMapper, Bills> implements
         // 转换当月第一天和最后一天
         String startDate = month + "-01";
         String endDate = month + "-" + LocalDate.parse(startDate).lengthOfMonth();
+
+        List<Long> familyUserIdList = bookFamilyUsersService.getBookFamilyUserIds(bookId);
         List<Bills> billsList = this.lambdaQuery()
                 .eq(Bills::getBookId, bookId)
+                .in(CollectionUtil.isNotEmpty(familyUserIdList), Bills::getUserId,  familyUserIdList)
+                .eq(CollectionUtil.isEmpty(familyUserIdList), Bills::getUserId, StpUtil.getLoginIdAsLong())
                 .ge(Bills::getBillDate, startDate)
                 .le(Bills::getBillDate, endDate)
                 .list();
         if (CollectionUtil.isNotEmpty(billsList)) {
             List<BillDTO> dtoList = billConverter.toDTOList(billsList);
-            // todo 这里用户先写死
-            dtoList.forEach(vo -> {
-                if (vo.getUserId() != null && vo.getUserId() == 1L) {
-                    vo.setUserName("孙罗");
+            List<Long> userIdList = dtoList.stream().map(BillDTO::getUserId).distinct().collect(Collectors.toList());
+            Map<Long, String> userNameMap = MapUtil.newHashMap();
+            List<SysUser> userList = sysUserService.lambdaQuery().in(SysUser::getId, userIdList).list();
+            if (CollectionUtil.isNotEmpty(userList)) {
+                for (SysUser user : userList) {
+                    userNameMap.put(Long.valueOf(user.getId()), user.formatUserName());
                 }
-                if (vo.getUserId()!= null && vo.getUserId() == 2L) {
-                    vo.setUserName("关甜");
+            }
+
+            dtoList.forEach(vo -> {
+                if (vo.getUserId() != null) {
+                    vo.setUserName(userNameMap.getOrDefault(vo.getUserId(), null));
                 }
             });
             // 按日期分组 并降序
@@ -109,22 +123,27 @@ public class BillsServiceImpl extends ServiceImpl<BillsMapper, Bills> implements
         if (bookId == null || StrUtil.isBlank(month)) {
             throw new BizException(StatusEnum.ILLEGAL_ARGUMENTS);
         }
+
         // 转换当月第一天和最后一天
         String startDate = month + "-01";
         String endDate = month + "-" + LocalDate.parse(startDate).lengthOfMonth();
         // todo 暂时直接通过sql判断当月记录，后期单独一张统计表进行维护
-        List<Bills> list = this.lambdaQuery().eq(Bills::getBookId, bookId)
+        List<Long> familyUserIdList = bookFamilyUsersService.getBookFamilyUserIds(bookId);
+        List<Bills> billsList = this.lambdaQuery()
+                .eq(Bills::getBookId, bookId)
+                .in(CollectionUtil.isNotEmpty(familyUserIdList), Bills::getUserId,  familyUserIdList)
+                .eq(CollectionUtil.isEmpty(familyUserIdList), Bills::getUserId, StpUtil.getLoginIdAsLong())
                 .ge(Bills::getBillDate, startDate)
                 .le(Bills::getBillDate, endDate)
                 .list();
-        if (CollectionUtil.isEmpty(list)) {
+        if (CollectionUtil.isEmpty(billsList)) {
             return MapUtil.newHashMap();
         }
         // 统计支出和收入金额
         Map<String, Object> resultMap = MapUtil.newHashMap();
-        BigDecimal expenseAmount = list.stream().filter(vo -> vo.getType() == 1)
+        BigDecimal expenseAmount = billsList.stream().filter(vo -> vo.getType() == 1)
                 .map(Bills::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal incomeAmount = list.stream().filter(vo -> vo.getType() == 0)
+        BigDecimal incomeAmount = billsList.stream().filter(vo -> vo.getType() == 0)
                .map(Bills::getAmount).reduce(BigDecimal.ZERO, BigDecimal::add);
         resultMap.put("totalExpense", expenseAmount);
         resultMap.put("totalIncome", incomeAmount);

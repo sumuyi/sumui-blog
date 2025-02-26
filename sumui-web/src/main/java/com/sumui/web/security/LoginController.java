@@ -13,6 +13,7 @@ import com.sumui.common.model.security.WxLoginDTO;
 import com.sumui.common.model.system.SysUser;
 import com.sumui.common.utils.uuid.IDUtils;
 import com.sumui.common.utils.wechat.WechatUtil;
+import com.sumui.service.BooksService;
 import com.sumui.service.LoginService;
 import com.sumui.service.impl.system.SysUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,9 @@ public class LoginController {
 
     @Resource
     private SysUserService userService;
+
+    @Resource
+    private BooksService booksService;
 
 //    @OperateLog(title = "登录", businessType = OperateTypeEnum.LOGIN, excludeParamNames = { "password" })
     @PostMapping("/login")
@@ -91,6 +95,8 @@ public class LoginController {
             user.setAvatar(rawDataJson.getStr("avatarUrl"));
             user.setPassword(BCrypt.hashpw("123456"));
             userService.save(user);
+            // 关联用户到账本
+            booksService.addUserToBook(user.getId());
         }
 //        userService.wxUserInfo(accessToken,openId);
         StpUtil.login(user.getId());

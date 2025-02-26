@@ -12,6 +12,7 @@ import java.util.Date;
 public class BillDTO implements Serializable {
     private Long id;
     private Long userId;
+    private Long bookId;
     private String userName;
     private BigDecimal amount;      // 金额
     private Long categoryId;        // 账单类别

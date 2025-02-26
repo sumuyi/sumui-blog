@@ -1,5 +1,6 @@
 package com.sumui.common.model.system;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
@@ -140,4 +141,12 @@ public class SysUser implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 格式化用户名: 获取昵称，没有返回用户名
+     * @return 昵称或用户名
+     */
+    public String formatUserName() {
+        return StrUtil.isNotBlank(nickname) ? nickname : username;
+    }
 }

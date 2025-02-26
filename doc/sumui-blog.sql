@@ -192,3 +192,11 @@ CREATE TABLE task_tag_relations (
     FOREIGN KEY (task_id) REFERENCES task_todo(id),
     FOREIGN KEY (tag_id) REFERENCES task_tags(id)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT '任务-标签关联表';
+
+CREATE TABLE book_family_users (
+    id varchar(20) NOT NULL COMMENT '家庭ID',
+    book_id bigint unsigned NOT NULL COMMENT '家庭账本ID',
+    user_id bigint unsigned NOT NULL COMMENT '用户ID',
+    create_by varchar(20) DEFAULT NULL COMMENT '创建人',
+    PRIMARY KEY (book_id, user_id) USING BTREE
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT '家庭账本关联人员';
