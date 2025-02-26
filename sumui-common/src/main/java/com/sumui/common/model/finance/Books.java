@@ -56,6 +56,8 @@ public class Books implements Serializable {
      */
     private Date updatedAt;
 
+    private Integer delFlag;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 }

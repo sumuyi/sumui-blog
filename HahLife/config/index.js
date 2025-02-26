@@ -1,7 +1,7 @@
 const config = {
   // 开发环境
   development: {
-    baseURL: 'https://back.071020.xyz'
+    baseURL: 'https://706b87d5.r1.cpolar.top'
   },
   // 生产环境
   production: {

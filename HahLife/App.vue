@@ -6,6 +6,14 @@ import { onLaunch, onShow, onHide } from '@dcloudio/uni-app'
 
 onLaunch(() => {
 	console.log('App Launch')
+	// 检查本地存储中是否存在用户信息
+    const userInfo = uni.getStorageSync('userInfo');
+    if (!userInfo) {
+      // 如果没有存储用户信息，则跳转到登录页
+      uni.reLaunch({
+        url: '/pages/login/login'
+      });
+    }
 })
 
 onShow(() => {
@@ -33,6 +41,10 @@ onHide(() => {
 	.flex-between {
 		display: flex;
 		justify-content: space-between;
+		align-items: center;
+	}
+	.align-center {
+		display: flex;
 		align-items: center;
 	}
 	.mb-10 {

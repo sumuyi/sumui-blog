@@ -29,6 +29,13 @@
 			{
 				"navigationBarTitleText" : "记一笔"
 			}
+		},
+		{
+			"path" : "pages/login/login",
+			"style" : 
+			{
+				"navigationBarTitleText" : "登录"
+			}
 		}
 	],
 	"globalStyle": {

@@ -2,8 +2,18 @@
 const service = {
   request(options) {
     return new Promise((resolve, reject) => {
+      var tokenName = uni.getStorageSync('tokenName');    // 从本地缓存读取tokenName值
+      var tokenValue = uni.getStorageSync('tokenValue');    // 从本地缓存读取tokenValue值
+      var header = {
+          "content-type": "application/x-www-form-urlencoded"
+      };
+      if (tokenName != undefined && tokenName != '') {
+          header[tokenName] = tokenValue;
+      }
+
       uni.request({
         ...options,
+        header: header,
         success: (res) => {
           const { code, message, result } = res.data
           if (code === 200) {

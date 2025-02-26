@@ -64,12 +64,19 @@ public class LoginController {
         log.info("wxConstant:{}", wxConstant);
         // 2.开发者服务器 登录凭证校验接口 appid + appSecret + code
         JSONObject sessionKeyOrOpenId = WechatUtil.getSessionKeyOrOpenId(wxConstant, loginDTO.getCode());
+        Integer errcode = sessionKeyOrOpenId.getInt("errcode");
+        if (errcode != null && errcode == 40029) {
+            // 登录凭证无效
+            return ReqResult.fail("微信登录失败");
+        }
         // 3.接收微信接口服务 获取返回的参数
         String openId = sessionKeyOrOpenId.getStr("openid");
         String sessionKey = sessionKeyOrOpenId.getStr("session_key");
 
         // 4.校验签名 小程序发送的签名signature与服务器端生成的签名signature2 = sha1(rawData + sessionKey)
         String signature2 = DigestUtils.sha1Hex(loginDTO.getRawData() + sessionKey);
+        log.error("signature2:{}",signature2);
+        log.error("loginDTO.getSignature():{}",loginDTO.getSignature());
         if (!loginDTO.getSignature().equals(signature2)) {
             return ReqResult.fail("签名校验失败");
         }
