@@ -20,7 +20,8 @@
 			"path" : "pages/finance/finance",
 			"style" : 
 			{
-				"navigationBarTitleText" : "记账"
+				"navigationBarTitleText" : "记账",
+				"enablePullDownRefresh": true
 			}
 		},
 		{

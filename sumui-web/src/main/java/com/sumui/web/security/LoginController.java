@@ -7,12 +7,15 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.sumui.common.model.ReqResult;
 import com.sumui.common.model.constants.WXConstant;
+import com.sumui.common.model.dto.BookFamilyUsersDTO;
+import com.sumui.common.model.finance.BookFamilyUsers;
 import com.sumui.common.model.security.LoginBody;
 import com.sumui.common.model.security.LoginUserVO;
 import com.sumui.common.model.security.WxLoginDTO;
 import com.sumui.common.model.system.SysUser;
 import com.sumui.common.utils.uuid.IDUtils;
 import com.sumui.common.utils.wechat.WechatUtil;
+import com.sumui.service.BookFamilyUsersService;
 import com.sumui.service.BooksService;
 import com.sumui.service.LoginService;
 import com.sumui.service.impl.system.SysUserService;
@@ -22,6 +25,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 登录入口
@@ -45,6 +49,9 @@ public class LoginController {
 
     @Resource
     private BooksService booksService;
+
+    @Resource
+    private BookFamilyUsersService bookFamilyUsersService;
 
 //    @OperateLog(title = "登录", businessType = OperateTypeEnum.LOGIN, excludeParamNames = { "password" })
     @PostMapping("/login")
@@ -103,6 +110,11 @@ public class LoginController {
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
 
         // 构建返回值
+        // 获取家庭用户列表
+        List<BookFamilyUsersDTO> usersDTOList = null;
+        if (user.getFamilyBookId() != null) {
+            usersDTOList = bookFamilyUsersService.getBookFamilyUsersByBookId(user.getFamilyBookId());
+        }
         return ReqResult.ok(LoginUserVO.builder()
                 .userId(tokenInfo.getLoginId().toString())
                 .nickname(user.getNickname())
@@ -112,6 +124,7 @@ public class LoginController {
                 .userName(user.getUsername())
                 .saToken(tokenInfo.getTokenValue())
                 .expireTime(tokenInfo.getTokenTimeout())
+                .familyUsersList(usersDTOList)
                 .build()
         );
     }

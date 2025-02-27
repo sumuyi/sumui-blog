@@ -14,4 +14,10 @@
     <sql id="Base_Column_List">
         book_id,user_id,id,create_by
     </sql>
+    <select id="selectFamilyUsersByBookId" resultType="com.sumui.common.model.dto.BookFamilyUsersDTO">
+        select user.id as user_id, user.username,user.nickname
+        from book_family_users family
+        inner join sys_user user on user.id = family.user_id
+        where family.book_id = #{bookId}
+    </select>
 </mapper>

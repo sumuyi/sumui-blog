@@ -1,7 +1,9 @@
 package com.sumui.service.impl;
 
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.sumui.common.model.dto.BookFamilyUsersDTO;
 import com.sumui.common.model.finance.BookFamilyUsers;
 import com.sumui.common.model.finance.Books;
 import com.sumui.service.BookFamilyUsersService;
@@ -40,6 +42,19 @@ public class BookFamilyUsersServiceImpl extends ServiceImpl<BookFamilyUsersMappe
         }
         return this.lambdaQuery().eq(BookFamilyUsers::getBookId, bookId).list()
                 .stream().map(BookFamilyUsers::getUserId).collect(Collectors.toList());
+    }
+
+    /**
+     * 获取用户关联的家庭账本
+     * @param familyBookId 家庭账本id
+     * @return 家庭账本
+     */
+    @Override
+    public List<BookFamilyUsersDTO> getBookFamilyUsersByBookId(Long familyBookId) {
+        if (familyBookId == null) {
+            return ListUtil.empty();
+        }
+        return this.baseMapper.selectFamilyUsersByBookId(familyBookId);
     }
 }
 

@@ -1,23 +1,39 @@
 <template>
 	<view class="add-bill-container">
     <!-- 顶部类型切换 -->
-    <view class="type-box flex-between">
-      <view class="type-item" v-for="type in typeList" :key="type.value"
-        :style="{ backgroundColor: currentType === type.value ? type.bgColor : '' }"
-        @click="handleTypeClick(type.value)"
+    <view class="flex-between pd-lr20">
+      <uv-text :text="currentBookName" @click="showPopupBookList"></uv-text>
+      <view class="type-box flex-between">
+        <view 
+          v-for="(type, index) in typeList" 
+          :key="index"
+          class="type-item"
+          :style="{ backgroundColor: currentType === type.value ? type.bgColor : '' }"
+          @tap="handleTypeClick(type.value)"
         >
-        {{ type.label }}
+          {{ type.label }}
+        </view>
       </view>
     </view>
     <!-- 中间 图标分类 选择 -->
     <view class="category-grid">
       <view class="category-container">
-        <view v-for="category in categories" :key="category.value" class="category-item"
-          @click="selectCategory(category)">
-          <view :style="{ backgroundColor: formState.categoryId === category.value ? 'blue' : '' }" style="width: 24px;height: 24px;margin: 0 auto" />
-          <span style="font-size: 12px;" :style="{ color: formState.categoryId === category.value ? 'blue' : '' }">
+        <view 
+          v-for="(category, index) in categories" 
+          :key="index"
+          class="category-item"
+          @tap="selectCategory(category)"
+        >
+          <view 
+            :style="{ backgroundColor: formState.categoryId === category.value ? 'blue' : '' }" 
+            style="width: 24px;height: 24px;margin: 0 auto" 
+          />
+          <text 
+            style="font-size: 12px;" 
+            :style="{ color: formState.categoryId === category.value ? 'blue' : '' }"
+          >
             {{ category.label }}
-          </span>
+          </text>
         </view>
       </view>
     </view>
@@ -31,7 +47,7 @@
     <view class="operate-box flex-between">
       <view class="flex-between" @click="showPickerUser">
         <uv-icon name="server-man"></uv-icon>
-        <text class="user-name">{{ formState.userName  }}</text>
+        <text class="user-name">{{ formState.userName }}</text>
       </view>
     </view>
 
@@ -45,36 +61,92 @@
 
       <!-- 数字键盘 -->
       <view class="number-keyboard">
-        <view class="keyboard-row" v-for="row in keyboardLayout" :key="row.join('')">
-          <view class="num-btn" v-for="key in row" :key="key" @click="handleKeyPress(key)" :class="{ 'function-key': isNaN(key) }">
+        <view 
+          v-for="(row, rowIndex) in keyboardLayout" 
+          :key="rowIndex"
+          class="keyboard-row"
+        >
+          <view 
+            v-for="(key, keyIndex) in row" 
+            :key="keyIndex"
+            class="num-btn"
+            :class="{ 'function-key': isNaN(key) }"
+            @tap="handleKeyPress(key)"
+          >
             {{ key }}
           </view>
         </view>
       </view>
     </view>
+
+    <!-- 账本弹框 -->
+    <uv-picker ref="pickerBookRef" :columns="bookList" keyName="name" @confirm="confirmBook"></uv-picker>
     
 
-    <uv-picker ref="pickerUserRef" :columns="usersList" keyName="label" @confirm="confirmUser"></uv-picker>
+    <uv-picker 
+      ref="pickerUserRef" 
+      :columns="familyList" 
+      keyName="label" 
+      @confirm="confirmUser"
+    ></uv-picker>
     <uv-toast ref="toast"></uv-toast>
   </view>
 </template>
 
 <script setup>
 import { reactive, ref, nextTick } from 'vue';
-import { onLoad } from '@dcloudio/uni-app'; // 从 @dcloudio/uni-app 导入 onShow
+import { onLoad } from '@dcloudio/uni-app';
 import { timeFormat } from '@/uni_modules/uv-ui-tools/libs/function/index.js';
 import { billApi } from '@/api/bills'
+import { bookApi } from '@/api/books'
+
+// 获取用户账本列表
+const currentBookName = ref('默认账本')
+const currentBookId = ref(null)
+const bookList = ref([])
+const getBookList = async () => {
+  try {
+    let response = await bookApi.getList()
+    console.log('userBooks', response)
+    bookList.value = [response]
+    if (response && response.length > 0) {
+      currentBookId.value = response[0].id
+      currentBookName.value = response[0].name
+    }
+  } catch (error) {
+    console.error('获取账本列表失败', error)
+  }
+}
+// 打开账本列表
+const pickerBookRef = ref(null)
+const showPopupBookList = async () => {
+  await nextTick()
+  if (pickerBookRef.value) {
+    console.log('当前账本', currentBookName.value);
+    pickerBookRef.value.open()
+  }
+}
+// 确认选择账本
+const confirmBook = (e) => {
+  console.log('confirm', e);
+  currentBookId.value = e.value[0].id
+  currentBookName.value = e.value[0].name
+}
+
+// 修改为二维数组结构
+const familyList = ref([[]])
 
 const formState = reactive({
-  type: 1,  // 默认为支出
-  userId: 1, // 默认用户
+  type: 1,
+  userId: 1,
   userName: '苏木易',
   amount: null,
   categoryId: 1,
   account: undefined,
-  billDate: ref(timeFormat(new Date().getTime(), "yyyy-mm-dd")),
+  billDate: timeFormat(new Date().getTime(), "yyyy-mm-dd"),
   remark: undefined
 })
+
 // 类型切换
 const currentType = ref(1)
 const typeList = ref([
@@ -98,14 +170,12 @@ const categories = [
   // ... 添加更多分类
 ]
 
-const usersList = [[
-  { label: '苏木易', value: 1 },
-  { label: '甜崽', value: 2 }
-]]
 const confirmUser = (e) => {
-  console.log('confirm', e);
-  formState.userId = e.value[0].value
-  formState.userName = e.value[0].label
+  console.log('confirm', e)
+  if (e.value && e.value[0]) {
+    formState.userId = e.value[0].value
+    formState.userName = e.value[0].label
+  }
 }
 const pickerUserRef = ref(null)
 const showPickerUser = async () => {
@@ -158,7 +228,8 @@ const handleSave = async () => {
     categoryId: formState.categoryId,
     account: formState.account || 1,
     remark: formState.remark,
-    billDate: formState.billDate
+    billDate: formState.billDate,
+    bookId: currentBookId.value
   }
 
   try {
@@ -263,9 +334,35 @@ const selectCategory = (category) => {
 }
 
 onLoad(operation => {
-	// 页面加载时执行的逻辑
-	console.log('页面加载', operation);
-
+  console.log('页面加载', operation)
+  getBookList()
+  
+  // 获取本地存储的用户信息
+  const userInfo = uni.getStorageSync('userInfo')
+  console.log('本地存储的用户信息：', userInfo)
+  
+  if (userInfo) {
+    formState.userId = userInfo.userId
+    formState.userName = userInfo.nickname || userInfo.userName
+    
+    // 初始化家庭成员列表
+    const members = []
+    // 添加家庭成员
+    if (userInfo.familyUsersList) {
+      userInfo.familyUsersList.forEach(item => {
+        if (item && item.userId !== userInfo.userId) { // 避免重复添加当前用户
+          members.push({
+            label: item.nickname || item.username,
+            value: item.userId
+          })
+        }
+      })
+    }
+    
+    // 设置为二维数组
+    familyList.value = [members]
+    console.log('家庭成员列表', familyList.value)
+  }
 })
 </script>
 

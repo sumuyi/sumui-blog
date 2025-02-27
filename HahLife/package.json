@@ -1,8 +1,8 @@
 {
   "dependencies": {
     "axios": "^1.7.9",
-    "unplugin-auto-import": "^19.1.0",
-    "uview-ui": "^2.0.38"
+    "pinia": "^2.3.1",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "sass": "^1.85.0",

@@ -69,7 +69,7 @@
 		</uv-popup>
 
     <!-- 账本弹框 -->
-    <uv-picker ref="pickerUserRef" :columns="bookList" keyName="name" @confirm="confirmBook"></uv-picker>
+    <uv-picker ref="pickerBookRef" :columns="bookList" keyName="name" @confirm="confirmBook"></uv-picker>
 		
     <view class="fixed-bottom-right-button">
       <uv-button icon="plus" @click="showPopupAddBill" shape="circle" color="#3c9cff" iconColor="#fff"></uv-button>
@@ -83,6 +83,7 @@ import { onMounted, ref, nextTick } from 'vue'
 import { billApi } from '@/api/bills'
 import { bookApi } from '@/api/books'
 import { timeFormat } from '@/uni_modules/uv-ui-tools/libs/function/index.js';
+import { onPullDownRefresh } from '@dcloudio/uni-app'; // 引入 onPullDownRefresh
 
 // 获取用户账本列表
 const currentBookName = ref('默认账本')
@@ -92,25 +93,24 @@ const getBookList = async () => {
   try {
     let response = await bookApi.getList()
     console.log('userBooks', response)
-    bookList.value = response
+    bookList.value = [response]
     if (response && response.length > 0) {
       currentBookId.value = response[0].id
       currentBookName.value = response[0].name
       
-      getFinance()
-      fetchStatistics()
+      refreshList()
     }
   } catch (error) {
     console.error('获取账本列表失败', error)
   }
 }
 // 打开账本列表
-const pickerUserRef = ref(null)
+const pickerBookRef = ref(null)
 const showPopupBookList = async () => {
   await nextTick()
-  if (pickerUserRef.value) {
+  if (pickerBookRef.value) {
     console.log('当前账本', currentBookName.value);
-    pickerUserRef.value.open()
+    pickerBookRef.value.open()
   }
 }
 // 确认选择账本
@@ -118,6 +118,7 @@ const confirmBook = (e) => {
   console.log('confirm', e);
   currentBookId.value = e.value[0].id
   currentBookName.value = e.value[0].name
+  refreshList()
 }
 
 // 打开添加账单弹框
@@ -126,6 +127,11 @@ const showPopupAddBill = () => {
   uni.navigateTo({
     url: '/pages/finance/addBill?id=1&name=uniapp'
   });
+}
+
+const refreshList = () => {
+  getFinance()
+  fetchStatistics()
 }
 
 const billList = ref([])
@@ -171,6 +177,10 @@ const categories = [
 // 获取账单数据
 const getFinance = async () => {
 	try {
+    uni.showLoading({
+      title: '加载中...',
+      mask: true
+    })
 		let response = await billApi.getList(currentBookId.value, currentMonth.value)
 		
     // 添加空值检查
@@ -204,6 +214,7 @@ const getFinance = async () => {
       }
     }
     billList.value = Object.values(groupedBills)
+    uni.hideLoading()
 	} catch (err) {
 		console.error(err)
 	}
@@ -267,8 +278,7 @@ const confirm = () => {
   console.log('confirm');
   currentMonth.value = new Date().getFullYear() + '-' + (currentMonthIndex.value < 10 ? '0' + currentMonthIndex.value : currentMonthIndex.value)
   currentMonthStr.value = new Date().getFullYear() + '年' + (currentMonthIndex.value < 10? '0' + currentMonthIndex.value : currentMonthIndex.value) + '月'
-  getFinance()
-  fetchStatistics()
+  refreshList()
   popupDate.value.close()
 }
 
@@ -279,6 +289,14 @@ const selectMonth = (index) => {
   currentMonthIndex.value = index
   // 可以在这里添加更新数据的逻辑
 }
+
+onPullDownRefresh(() => {
+  console.log('refresh');
+  setTimeout(function () {
+    refreshList()
+    uni.stopPullDownRefresh();
+  }, 1000);
+}) 
 
 onMounted(() => {
   getBookList()

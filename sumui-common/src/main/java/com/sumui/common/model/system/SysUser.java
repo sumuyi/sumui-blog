@@ -91,6 +91,11 @@ public class SysUser implements Serializable {
     private String deptId;
 
     /**
+     * 家庭账本ID
+     */
+    private Long familyBookId;
+
+    /**
      * 登录IP
      */
     private String loginIp;

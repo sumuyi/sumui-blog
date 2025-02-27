@@ -5,7 +5,7 @@ const service = {
       var tokenName = uni.getStorageSync('tokenName');    // 从本地缓存读取tokenName值
       var tokenValue = uni.getStorageSync('tokenValue');    // 从本地缓存读取tokenValue值
       var header = {
-          "content-type": "application/x-www-form-urlencoded"
+          "content-type": "application/json"
       };
       if (tokenName != undefined && tokenName != '') {
           header[tokenName] = tokenValue;

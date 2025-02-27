@@ -1,31 +1,17 @@
 import App from './App'
-
-// #ifndef VUE3
-import Vue from 'vue'
-import axios from 'axios'
-import uView from "uview-ui";
-import './uni.promisify.adaptor'
-Vue.config.productionTip = false
-Vue.use(uView);
-App.mpType = 'app'
-const app = new Vue({
-  ...App
-})
-
-app.config.globalProperties.$axios = axios
-
-app.$mount()
-// #endif
-
-// #ifdef VUE3
 import { createSSRApp } from 'vue'
+import { createPinia } from 'pinia'
+import uView from "uview-plus"
 
 export function createApp() {
-  const app = createSSRApp(App)
-  
-  
-  return {
-    app
-  }
+	const app = createSSRApp(App)
+	const pinia = createPinia()
+	
+	app.use(pinia)
+	app.use(uView)
+	
+	return {
+		app,
+		pinia
+	}
 }
-// #endif

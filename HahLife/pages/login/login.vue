@@ -3,7 +3,7 @@
 		<!-- 中间内容区 -->
 		<view class="content">
 			<view class="logo-container">
-				<image class="logo" src="../../static/logo.png" mode="aspectFit"></image>
+				<image class="logo" src="@/static/logo.png" mode="aspectFit"></image>
 			</view>
 			
 			<view class="app-name">
@@ -15,7 +15,7 @@
 			<view class="login-btn-container">
 				<button class="wechat-login-btn" @click="wechatLogin">
 					<view class="wechat-icon align-center">
-						<image src="../../static/wechat.png" mode="aspectFit" style="width: 24px; height: 24px;"></image>
+						<image src="@/static/wechat.png" mode="aspectFit" style="width: 24px; height: 24px;"></image>
 					</view>
 					<view class="wechat-text align-center">通过微信登录</view>
 				</button>
@@ -25,8 +25,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-const encryptedData = ref(null)
+import { useUserStore } from '@/store/index.js'
+
+const userStore = useUserStore()
+
 const wechatLogin = () => {
 	// 这里可以调用uni.login等API实现微信登录
 	uni.login({
@@ -36,7 +38,7 @@ const wechatLogin = () => {
 				// 获取用户信息
 				uni.getUserInfo({
 					provider: 'weixin',
-					success: function (infoRes) {
+					success: (infoRes) => {
 						let param = {
 							code: res.code,
 							encryptedData: infoRes.encryptedData,
@@ -52,23 +54,35 @@ const wechatLogin = () => {
 		}
 	})
 }
+
 const doLogin = (param) => {
 	console.log(param)
 	uni.request({
-		url: 'https://706b87d5.r1.cpolar.top/auth/api/wx-login', // 你的开发者服务器地址
+		url: 'https://back.071020.xyz/auth/api/wx-login',
 		method: 'POST',
 		data: param,
 		success: (res) => {
 			let { code, result } = res.data;
 			if (code === 200) {
-				// 1、首先在登录时，将tokenName和tokenValue一起存储在本地，例如：
+				console.log('登录成功，获取到的数据：', result);
+				
+				// 存储用户信息到本地
 				uni.setStorageSync('userId', result.userId);
-				uni.setStorageSync('tokenName', "saToken");
+				uni.setStorageSync('tokenName', "Sa-token");
 				uni.setStorageSync('tokenValue', result.saToken);
 				uni.setStorageSync('userInfo', result);
 
+				// 更新 store
+				userStore.setUserId(result.userId);
+				userStore.setUserInfo(result);
+				
+				// 如果有家庭成员列表，直接设置
+				if (result.familyUsersList) {
+					userStore.setFamilyList(result.familyUsersList);
+				}
+
 				uni.switchTab({
-					url: "/pages/index/index",
+					url: "/pages/index/index"
 				})
 			} else {
 				uni.showToast({
@@ -77,6 +91,14 @@ const doLogin = (param) => {
 					duration: 2000
 				})
 			}
+		},
+		fail: (err) => {
+			console.error('登录请求失败：', err);
+			uni.showToast({
+				icon: 'none',
+				title: '网络请求失败',
+				duration: 2000
+			})
 		}
 	})
 }

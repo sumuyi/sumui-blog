@@ -1,5 +1,6 @@
 package com.sumui.service;
 
+import com.sumui.common.model.dto.BookFamilyUsersDTO;
 import com.sumui.common.model.finance.BookFamilyUsers;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -12,4 +13,6 @@ import java.util.List;
 */
 public interface BookFamilyUsersService extends IService<BookFamilyUsers> {
     List<Long> getBookFamilyUserIds(Long bookId);
+
+    List<BookFamilyUsersDTO> getBookFamilyUsersByBookId(Long familyBookId);
 }

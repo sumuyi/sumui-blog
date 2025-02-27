@@ -87,9 +87,9 @@ public class BillsServiceImpl extends ServiceImpl<BillsMapper, Bills> implements
 
         List<Long> familyUserIdList = bookFamilyUsersService.getBookFamilyUserIds(bookId);
         List<Bills> billsList = this.lambdaQuery()
-                .eq(Bills::getBookId, bookId)
-                .in(CollectionUtil.isNotEmpty(familyUserIdList), Bills::getUserId,  familyUserIdList)
+                .eq(CollectionUtil.isEmpty(familyUserIdList), Bills::getBookId, bookId)
                 .eq(CollectionUtil.isEmpty(familyUserIdList), Bills::getUserId, StpUtil.getLoginIdAsLong())
+                .in(CollectionUtil.isNotEmpty(familyUserIdList), Bills::getUserId,  familyUserIdList)
                 .ge(Bills::getBillDate, startDate)
                 .le(Bills::getBillDate, endDate)
                 .list();
@@ -97,6 +97,7 @@ public class BillsServiceImpl extends ServiceImpl<BillsMapper, Bills> implements
             List<BillDTO> dtoList = billConverter.toDTOList(billsList);
             List<Long> userIdList = dtoList.stream().map(BillDTO::getUserId).distinct().collect(Collectors.toList());
             Map<Long, String> userNameMap = MapUtil.newHashMap();
+            log.error("userIdList:{}", userIdList);
             List<SysUser> userList = sysUserService.lambdaQuery().in(SysUser::getId, userIdList).list();
             if (CollectionUtil.isNotEmpty(userList)) {
                 for (SysUser user : userList) {
@@ -130,9 +131,9 @@ public class BillsServiceImpl extends ServiceImpl<BillsMapper, Bills> implements
         // todo 暂时直接通过sql判断当月记录，后期单独一张统计表进行维护
         List<Long> familyUserIdList = bookFamilyUsersService.getBookFamilyUserIds(bookId);
         List<Bills> billsList = this.lambdaQuery()
-                .eq(Bills::getBookId, bookId)
-                .in(CollectionUtil.isNotEmpty(familyUserIdList), Bills::getUserId,  familyUserIdList)
+                .eq(CollectionUtil.isEmpty(familyUserIdList), Bills::getBookId, bookId)
                 .eq(CollectionUtil.isEmpty(familyUserIdList), Bills::getUserId, StpUtil.getLoginIdAsLong())
+                .in(CollectionUtil.isNotEmpty(familyUserIdList), Bills::getUserId,  familyUserIdList)
                 .ge(Bills::getBillDate, startDate)
                 .le(Bills::getBillDate, endDate)
                 .list();
