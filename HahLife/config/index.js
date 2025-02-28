@@ -1,7 +1,7 @@
 const config = {
   // 开发环境
   development: {
-    baseURL: 'https://back.071020.xyz'
+    baseURL: 'http://localhost:9090'  // 本地开发环境地址
   },
   // 生产环境
   production: {

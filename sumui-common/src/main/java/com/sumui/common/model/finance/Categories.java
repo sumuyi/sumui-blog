@@ -16,13 +16,13 @@ import lombok.Data;
 @Data
 public class Categories implements Serializable {
     /**
-     * 
+     *
      */
     @TableId(type = IdType.AUTO)
-    private Long id;
+    private String id;
 
     /**
-     * 
+     *
      */
     private String name;
 
@@ -32,22 +32,22 @@ public class Categories implements Serializable {
     private Integer type;
 
     /**
-     * 
+     *
      */
     private String icon;
 
     /**
      * 父分类ID，用于支持二级分类
      */
-    private Long parentId;
+    private String parentId;
 
     /**
-     * 
+     *
      */
     private Date createdAt;
 
     /**
-     * 
+     *
      */
     private Date updatedAt;
 

@@ -16,15 +16,15 @@ import lombok.Data;
 @Data
 public class Books implements Serializable {
     /**
-     * 
+     *
      */
     @TableId(type = IdType.AUTO)
-    private Long id;
+    private String id;
 
     private String userId;
 
     /**
-     * 
+     *
      */
     private String name;
 
@@ -34,12 +34,12 @@ public class Books implements Serializable {
     private String type;
 
     /**
-     * 
+     *
      */
     private String description;
 
     /**
-     * 
+     *
      */
     private String coverImage;
 
@@ -49,13 +49,13 @@ public class Books implements Serializable {
     private Integer status;
 
     /**
-     * 
+     *
      */
     private String createdBy;
     private Date createdAt;
 
     /**
-     * 
+     *
      */
     private String updatedBy;
     private Date updatedAt;

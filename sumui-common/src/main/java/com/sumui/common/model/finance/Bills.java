@@ -17,25 +17,25 @@ import lombok.Data;
 @Data
 public class Bills implements Serializable {
     /**
-     * 
+     *
      */
     @TableId(type = IdType.AUTO)
-    private Long id;
+    private String id;
 
     /**
      * 用户ID
      */
-    private Long userId;
+    private String userId;
 
     /**
      * 账本ID
      */
-    private Long bookId;
+    private String bookId;
 
     /**
      * 分类ID
      */
-    private Long categoryId;
+    private String categoryId;
 
     /**
      * 金额
@@ -55,7 +55,7 @@ public class Bills implements Serializable {
     /**
      * 账单日期
      */
-    private Date billDate;
+    private String billDate;
 
     /**
      * 备注
@@ -78,12 +78,12 @@ public class Bills implements Serializable {
     private Long createdBy;
 
     /**
-     * 
+     *
      */
     private Date createdAt;
 
     /**
-     * 
+     *
      */
     private Date updatedAt;
 

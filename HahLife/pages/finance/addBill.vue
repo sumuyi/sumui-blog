@@ -2,7 +2,10 @@
 	<view class="add-bill-container">
     <!-- 顶部类型切换 -->
     <view class="flex-between pd-lr20">
-      <uv-text :text="currentBookName" @click="showPopupBookList"></uv-text>
+      <view class="current-book-name flex-between" @click="showPopupBookList">
+        {{ currentBookName }}
+        <uv-icon name="arrow-down-fill" color="black"></uv-icon>
+      </view>
       <view class="type-box flex-between">
         <view 
           v-for="(type, index) in typeList" 
@@ -22,16 +25,13 @@
           v-for="(category, index) in categories" 
           :key="index"
           class="category-item"
+          :class="{ active: formState.categoryId === category.value }"
           @tap="selectCategory(category)"
         >
-          <view 
-            :style="{ backgroundColor: formState.categoryId === category.value ? 'blue' : '' }" 
-            style="width: 24px;height: 24px;margin: 0 auto" 
-          />
-          <text 
-            style="font-size: 12px;" 
-            :style="{ color: formState.categoryId === category.value ? 'blue' : '' }"
-          >
+          <view class="icon-box">
+            <uv-icon :custom-prefix="'su-icon ' + category.icon" size="20"></uv-icon>
+          </view>
+          <text style="font-size: 12px;" :style="{ color: formState.categoryId === category.value ? '#1890ff' : '#666' }">
             {{ category.label }}
           </text>
         </view>
@@ -43,35 +43,35 @@
       <uv-textarea v-model="formState.remark" border="bottom" placeholder="请输入备注内容"></uv-textarea>
     </view>
 
-    <!-- 底部计算器操作 -->
-    <view class="operate-box flex-between">
-      <view class="flex-between" @click="showPickerUser">
-        <uv-icon name="server-man"></uv-icon>
-        <text class="user-name">{{ formState.userName }}</text>
-      </view>
-    </view>
-
     <!-- 金额和键盘 -->
     <view>
-      <!-- 金额显示 -->
-      <view class="amount-display">
-        <text class="currency">¥</text>
-        <text class="amount">{{ formState.amount || '0.00' }}</text>
+      <!-- 底部计算器操作 -->
+      <view class="operate-box flex-between">
+        <view class="flex">
+          <view class="flex" @click="showPickerUser">
+            <uv-icon name="server-man"></uv-icon>
+            <text class="user-name mr-10">{{ formState.userName }}</text>
+          </view>
+          <view class="flex" @click="showPickerBillDate">
+            <uv-icon name="server-man"></uv-icon>
+            <text class="user-name">{{ formState.billDate }}</text>
+          </view>
+        </view>
+
+        <!-- 金额显示 -->
+        <view class="amount-display">
+          <text class="currency">¥</text>
+          <text class="amount">{{ formState.amount || '0.00' }}</text>
+        </view>
       </view>
+      
 
       <!-- 数字键盘 -->
       <view class="number-keyboard">
-        <view 
-          v-for="(row, rowIndex) in keyboardLayout" 
-          :key="rowIndex"
-          class="keyboard-row"
-        >
-          <view 
-            v-for="(key, keyIndex) in row" 
-            :key="keyIndex"
-            class="num-btn"
-            :class="{ 'function-key': isNaN(key) }"
-            @tap="handleKeyPress(key)"
+        <view v-for="(row, rowIndex) in keyboardLayout" :key="rowIndex" class="keyboard-row" >
+          <view v-for="(key, keyIndex) in row" :key="keyIndex" class="num-btn" :class="{ 'function-key': isNaN(key) }" 
+            :style="{ backgroundColor: setColor(key) }"
+            @click="handleKeyPress(key)"
           >
             {{ key }}
           </view>
@@ -90,11 +90,17 @@
       @confirm="confirmUser"
     ></uv-picker>
     <uv-toast ref="toast"></uv-toast>
+    <uv-calendar 
+      ref="pickerBillDateRef"
+      :show="showCalendar"
+      @confirm="confirmBillDate"
+      @close="showCalendar = false"
+    />
   </view>
 </template>
 
 <script setup>
-import { reactive, ref, nextTick } from 'vue';
+import { reactive, ref, nextTick, computed } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { timeFormat } from '@/uni_modules/uv-ui-tools/libs/function/index.js';
 import { billApi } from '@/api/bills'
@@ -150,25 +156,48 @@ const formState = reactive({
 // 类型切换
 const currentType = ref(1)
 const typeList = ref([
-	{ label: '支出', value: 1, bgColor: 'red' },
-	{ label: '收入', value: 2, bgColor: 'green' },
+	{ label: '支出', value: 1, bgColor: '#fd3b2f' },
+	{ label: '收入', value: 2, bgColor: '#3bc25c' },
 	{ label: '转账', value: 3, bgColor: 'orange' }
 ])
 const handleTypeClick = (typeValue) => {
     currentType.value = typeValue;
 }
 
-// 分类数据
-const categories = [
-  { label: '三餐', value: 1, icon: 'su-icon-sancanshuiping' },
-  { label: '水果蔬菜', value: 2, icon: 'su-icon-shuiguoshucai' },
-  { label: '咖啡饮品', value: 3, icon: 'su-icon-kafeiguan' },
-  { label: '话费', value: 4, icon: 'su-icon-huafei' },
-  { label: '购物', value: 5, icon: 'su-icon-gouwu' },
-  { label: '火锅', value: 6, icon: 'su-icon-huoguo' },
-  { label: '交通', value: 7, icon: 'su-icon-huoguo' }
-  // ... 添加更多分类
+// 支出分类数据
+const expenseCategories = [
+  { label: '三餐', value: 1, icon: 'su-icon-food' },
+  { label: '蔬菜水果', value: 2, icon: 'su-icon-shucai' },
+  { label: '奶茶', value: 3, icon: 'su-icon-bubble-tea' },
+  { label: '购物', value: 5, icon: 'su-icon-gouwu-2' },
+  { label: '健身', value: 22, icon: 'su-icon-jianshen' },
+  { label: '美食', value: 6, icon: 'su-icon-canyin' },
+  { label: '交通', value: 7, icon: 'su-icon-jiaotong' },
+  { label: '数码', value: 8, icon: 'su-icon-xiangji' },
+  { label: '美容', value: 9, icon: 'su-icon-meirong' },
+  { label: '娱乐', value: 10, icon: 'su-icon-yule' },
+  { label: '通讯', value: 11, icon: 'su-icon-shouji-iphone12-zuhe' },
+  { label: '教育', value: 12, icon: 'su-icon-jiaoyu' },
+  { label: '住房', value: 13, icon: 'su-icon-a-fangziwuzijianzhu' },
+  { label: '服饰', value: 14, icon: 'su-icon-Suit-flat' },
+  { label: '医疗', value: 15, icon: 'su-icon-a-yiyuanzhensuoloufangjianzhu' },
+  { label: '旅行', value: 21, icon: 'su-icon-feiji' },
+  { label: '其他', value: 16, icon: 'su-icon-qita' }
 ]
+
+// 收入分类数据
+const incomeCategories = [
+  { label: '工资', value: 17, icon: 'su-icon-wodegongzi' },
+  { label: '生活费', value: 23, icon: 'su-icon-shenghuofei' },
+  { label: '收益', value: 18, icon: 'su-icon-shouyi' },
+  { label: '退款', value: 19, icon: 'su-icon-tuikuan' },
+  { label: '红包', value: 20, icon: 'su-icon-hongbao' },
+]
+
+// 根据当前类型显示对应的分类列表
+const categories = computed(() => {
+  return currentType.value === 1 ? expenseCategories : incomeCategories
+})
 
 const confirmUser = (e) => {
   console.log('confirm', e)
@@ -186,13 +215,28 @@ const showPickerUser = async () => {
   }
 }
 
+const showCalendar = ref(false)
+const pickerBillDateRef = ref(null)
+
+const showPickerBillDate = () => {
+  console.log('点击了日历');
+  
+  showCalendar.value = true
+}
+
+const confirmBillDate = (e) => {
+  console.log('选择的日期', e)
+  formState.billDate = timeFormat(new Date(e.fulldate).getTime(), "yyyy-mm-dd")
+  showCalendar.value = false
+}
+
 
 // 数字键盘布局
 const keyboardLayout = [
-  ['1', '2', '3', 'delete'],
-  ['4', '5', '6', 'subway'],
-  ['7', '8', '9', 'quick'],
-  ['again', '0', '.', 'save']
+  ['1', '2', '3', 'Del'],
+  ['4', '5', '6', '+'],
+  ['7', '8', '9', '-'],
+  ['00', '0', '.', 'Save']
 ]
 
 // 抽离处理函数
@@ -238,6 +282,7 @@ const handleSave = async () => {
       mask: true
     })
     let result = await billApi.add(billData)
+    uni.hideLoading()
     console.log('保存结果', result);
     
     toast.value.show({
@@ -245,7 +290,8 @@ const handleSave = async () => {
       type: 'success',
       duration: 1000
     })
-    uni.hideLoading()
+    
+    uni.$emit('refreshBillList')
     goBack()
   } catch (error) {
     console.error('保存失败:', error)
@@ -272,6 +318,9 @@ const handleNumberInput = (key) => {
     formState.amount = key
   } else {
     if (formState.amount.includes('.')) {
+      if (key === '00') {
+      	return
+      }
       const [integer, decimal = ''] = formState.amount.split('.')
       // 只有当小数部分长度小于2时才允许继续输入
       if (decimal.length < 2) {
@@ -287,6 +336,18 @@ const handleDecimalPoint = () => {
   // 如果已经有小数点，则不再添加
   if (!formState.amount || !formState.amount.includes('.')) {
     formState.amount = formState.amount ? `${formState.amount}.` : '0.'
+  }
+}
+
+const setColor = (key) => {
+  if (key === 'Del') {
+    return '#fae6e5'
+  } else if (key === 'Save') {
+    return '#007aff'
+  } else if (key === '+' || key === '-' || key === '.') {
+    return '#f3f3f3'
+  } else {
+    return '#ffffff'
   }
 }
 
@@ -350,12 +411,10 @@ onLoad(operation => {
     // 添加家庭成员
     if (userInfo.familyUsersList) {
       userInfo.familyUsersList.forEach(item => {
-        if (item && item.userId !== userInfo.userId) { // 避免重复添加当前用户
-          members.push({
-            label: item.nickname || item.username,
-            value: item.userId
-          })
-        }
+        members.push({
+          label: item.nickname || item.username,
+          value: item.userId
+        })
       })
     }
     
@@ -367,11 +426,22 @@ onLoad(operation => {
 </script>
 
 <style lang="scss" scoped>
-
+.current-book-name {
+  font-size: 28rpx;
+  color: black;
+  font-weight: 600;
+}
+::v-deep .category-item .uv-icon {
+  border-radius: 50%;
+  width: 70rpx;
+  height: 70rpx;
+  .su-icon {
+    margin: 0 auto !important;
+  }
+}
 
 .amount-display {
   text-align: right;
-  padding: 20rpx;
   font-size: 64rpx;
   font-weight: bold;
   color: #333;
@@ -380,6 +450,9 @@ onLoad(operation => {
 .amount-display .currency {
   font-size: 24px;
   margin-right: 4px;
+}
+.amount-display .amount {
+  color: #fe3730;
 }
 
 .number-keyboard {
@@ -401,22 +474,18 @@ onLoad(operation => {
   flex: 0 0 calc(20% - 10rpx);
   height: 100rpx;
   text-align: center;
-  background-color: white;
+  color: #020202;
   border-radius: 16rpx;
-  font-size: 24rpx;
+  font-size: 30rpx;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
 }
 
-.function-key {
-  font-size: 16px !important;
-  color: #333;
-}
-
 .operate-box {
-  padding: 20rpx 40rpx;
+  padding: 20rpx;
   .user-name {
     font-size: 24rpx;
     color: #535454;
@@ -426,8 +495,7 @@ onLoad(operation => {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
-  height: 520rpx;
-
+  height: 530rpx;
 }
 
 .category-container {
@@ -437,26 +505,32 @@ onLoad(operation => {
 }
 
 .category-item {
-  flex: 0 0 calc(20% - 10rpx); /* 一行显示4个，减去间距 */
+  flex: 0 0 calc(20% - 30rpx); /* 一行显示5个 */
   text-align: center;
-  padding: 10rpx;
-  background-color: #e6f7ff; /* 淡蓝色背景 */
-  
-  border-radius: 8rpx;
-  box-sizing: border-box;
-}
+  padding: 10rpx 10rpx;
 
-.icon-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
+  .icon-box {
+    width: 70rpx;
+    height: 70rpx;
+    background: #f6eeee;
+    border-radius: 50%;
+    margin: 0 auto;
+  }
+  
+  text {
+    font-size: 24rpx;
+    color: #666;
+  }
+  
+  &.active {
+    .icon-box { background: #c6d7f6; }
+    text { color: #1890ff; }
+  }
 }
 
 .type-box {
 	width: 380rpx;
-	background-color: #fff;
-	margin: 0 auto;
+	background-color: #ededed;
   border-radius: 40rpx;
   .type-item {
 		width: 120rpx;
@@ -468,5 +542,6 @@ onLoad(operation => {
 }
 .add-bill-container {
   padding: 40rpx 0;
+  background-color: #f9f9f9;
 }
 </style>

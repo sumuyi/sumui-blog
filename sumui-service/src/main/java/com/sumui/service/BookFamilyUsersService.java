@@ -12,7 +12,7 @@ import java.util.List;
 * @createDate 2025-02-26 16:54:07
 */
 public interface BookFamilyUsersService extends IService<BookFamilyUsers> {
-    List<Long> getBookFamilyUserIds(Long bookId);
+    List<String> getBookFamilyUserIds(Long bookId);
 
     List<BookFamilyUsersDTO> getBookFamilyUsersByBookId(Long familyBookId);
 }

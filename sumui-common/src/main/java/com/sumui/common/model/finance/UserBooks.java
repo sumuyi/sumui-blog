@@ -16,20 +16,20 @@ import lombok.Data;
 @Data
 public class UserBooks implements Serializable {
     /**
-     * 
+     *
      */
     @TableId(type = IdType.AUTO)
-    private Long id;
+    private String id;
 
     /**
-     * 
+     *
      */
-    private Long userId;
+    private String userId;
 
     /**
-     * 
+     *
      */
-    private Long bookId;
+    private String bookId;
 
     /**
      * 权限角色：owner-拥有者，editor-编辑者，viewer-查看者
@@ -37,12 +37,12 @@ public class UserBooks implements Serializable {
     private String role;
 
     /**
-     * 
+     *
      */
     private Date createdAt;
 
     /**
-     * 
+     *
      */
     private Date updatedAt;
 

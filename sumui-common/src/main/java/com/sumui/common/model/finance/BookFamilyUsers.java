@@ -23,12 +23,12 @@ public class BookFamilyUsers implements Serializable {
     /**
      * 家庭账本ID
      */
-    private Long bookId;
+    private String bookId;
 
     /**
      * 用户ID
      */
-    private Long userId;
+    private String userId;
 
     /**
      * 创建人

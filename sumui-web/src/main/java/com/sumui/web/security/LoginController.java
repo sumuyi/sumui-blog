@@ -1,6 +1,7 @@
 package com.sumui.web.security;
 
 import cn.dev33.satoken.secure.BCrypt;
+import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.json.JSONObject;
@@ -108,12 +109,15 @@ public class LoginController {
 //        userService.wxUserInfo(accessToken,openId);
         StpUtil.login(user.getId());
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+        // 存储用户信息
+        StpUtil.getSession().set(SaSession.USER, user);
 
         // 构建返回值
         // 获取家庭用户列表
         List<BookFamilyUsersDTO> usersDTOList = null;
         if (user.getFamilyBookId() != null) {
             usersDTOList = bookFamilyUsersService.getBookFamilyUsersByBookId(user.getFamilyBookId());
+            log.error("usersDTOList:{}", usersDTOList);
         }
         return ReqResult.ok(LoginUserVO.builder()
                 .userId(tokenInfo.getLoginId().toString())

@@ -1,7 +1,6 @@
 package com.sumui.service.impl;
 
 import cn.hutool.core.collection.ListUtil;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sumui.common.model.dto.BookFamilyUsersDTO;
 import com.sumui.common.model.finance.BookFamilyUsers;
@@ -28,11 +27,12 @@ public class BookFamilyUsersServiceImpl extends ServiceImpl<BookFamilyUsersMappe
 
     /**
      * 获取家庭账本的用户id
+     *
      * @param bookId 账本id
      * @return 用户id
      */
     @Override
-    public List<Long> getBookFamilyUserIds(Long bookId) {
+    public List<String> getBookFamilyUserIds(Long bookId) {
         if (bookId == null) {
             return ListUtil.empty();
         }

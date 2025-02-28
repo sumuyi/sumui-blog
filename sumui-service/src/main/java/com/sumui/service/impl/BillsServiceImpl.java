@@ -60,7 +60,7 @@ public class BillsServiceImpl extends ServiceImpl<BillsMapper, Bills> implements
 
         try {
             Bills bill = billConverter.toBill(billDTO);
-            bill.setId(IdUtil.getSnowflakeNextId());
+            bill.setId(IdUtil.getSnowflakeNextIdStr());
             bill.setPaymentMethod("wechat");
             bill.setCreatedBy(StpUtil.getLoginIdAsLong());
             log.error("bill:{}", bill);
@@ -85,7 +85,7 @@ public class BillsServiceImpl extends ServiceImpl<BillsMapper, Bills> implements
         String startDate = month + "-01";
         String endDate = month + "-" + LocalDate.parse(startDate).lengthOfMonth();
 
-        List<Long> familyUserIdList = bookFamilyUsersService.getBookFamilyUserIds(bookId);
+        List<String> familyUserIdList = bookFamilyUsersService.getBookFamilyUserIds(bookId);
         List<Bills> billsList = this.lambdaQuery()
                 .eq(CollectionUtil.isEmpty(familyUserIdList), Bills::getBookId, bookId)
                 .eq(CollectionUtil.isEmpty(familyUserIdList), Bills::getUserId, StpUtil.getLoginIdAsLong())
@@ -95,13 +95,13 @@ public class BillsServiceImpl extends ServiceImpl<BillsMapper, Bills> implements
                 .list();
         if (CollectionUtil.isNotEmpty(billsList)) {
             List<BillDTO> dtoList = billConverter.toDTOList(billsList);
-            List<Long> userIdList = dtoList.stream().map(BillDTO::getUserId).distinct().collect(Collectors.toList());
-            Map<Long, String> userNameMap = MapUtil.newHashMap();
+            List<String> userIdList = dtoList.stream().map(BillDTO::getUserId).distinct().collect(Collectors.toList());
+            Map<String, String> userNameMap = MapUtil.newHashMap();
             log.error("userIdList:{}", userIdList);
             List<SysUser> userList = sysUserService.lambdaQuery().in(SysUser::getId, userIdList).list();
             if (CollectionUtil.isNotEmpty(userList)) {
                 for (SysUser user : userList) {
-                    userNameMap.put(Long.valueOf(user.getId()), user.formatUserName());
+                    userNameMap.put(user.getId(), user.formatUserName());
                 }
             }
 
@@ -113,7 +113,7 @@ public class BillsServiceImpl extends ServiceImpl<BillsMapper, Bills> implements
             // 按日期分组 并降序
             dtoList.sort((o1, o2) -> o2.getBillDate().compareTo(o1.getBillDate()));
             // key指定日期格式
-            return dtoList.stream().collect(Collectors.groupingBy(vo -> DateUtil.format(vo.getBillDate(), "yyyy-MM-dd")));
+            return dtoList.stream().collect(Collectors.groupingBy(BillDTO::getBillDate));
         }
         return MapUtil.empty();
     }
@@ -129,7 +129,7 @@ public class BillsServiceImpl extends ServiceImpl<BillsMapper, Bills> implements
         String startDate = month + "-01";
         String endDate = month + "-" + LocalDate.parse(startDate).lengthOfMonth();
         // todo 暂时直接通过sql判断当月记录，后期单独一张统计表进行维护
-        List<Long> familyUserIdList = bookFamilyUsersService.getBookFamilyUserIds(bookId);
+        List<String> familyUserIdList = bookFamilyUsersService.getBookFamilyUserIds(bookId);
         List<Bills> billsList = this.lambdaQuery()
                 .eq(CollectionUtil.isEmpty(familyUserIdList), Bills::getBookId, bookId)
                 .eq(CollectionUtil.isEmpty(familyUserIdList), Bills::getUserId, StpUtil.getLoginIdAsLong())

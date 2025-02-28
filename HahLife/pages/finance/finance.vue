@@ -2,7 +2,10 @@
 	<view class="page-container">
 		<!-- 头部 -->
     <view class="flex-between">
-      <uv-text :text="currentBookName" @click="showPopupBookList"></uv-text>
+      <view class="current-book-name flex-between" @click="showPopupBookList">
+        {{ currentBookName }}
+        <uv-icon name="arrow-down-fill" color="black"></uv-icon>
+      </view>
       <view class="current-month-str flex-between" @click="showPopupDate">
         {{ currentMonthStr }}
         <uv-icon name="arrow-down-fill" color="black"></uv-icon>
@@ -80,10 +83,10 @@
 
 <script setup>
 import { onMounted, ref, nextTick } from 'vue'
+import { onShow, onPullDownRefresh } from '@dcloudio/uni-app'  // 添加 onLoad 导入
 import { billApi } from '@/api/bills'
 import { bookApi } from '@/api/books'
 import { timeFormat } from '@/uni_modules/uv-ui-tools/libs/function/index.js';
-import { onPullDownRefresh } from '@dcloudio/uni-app'; // 引入 onPullDownRefresh
 
 // 获取用户账本列表
 const currentBookName = ref('默认账本')
@@ -298,12 +301,25 @@ onPullDownRefresh(() => {
   }, 1000);
 }) 
 
+onShow(() => {
+  console.log('------onShow');
+  uni.$once('refreshBillList',function(){
+		console.log('监听到事件来自 refreshBillList');
+    refreshList()
+	})
+})
+
 onMounted(() => {
   getBookList()
 })
 </script>
 
 <style lang="scss" scoped>
+.current-book-name {
+  font-size: 28rpx;
+  color: black;
+  font-weight: 600;
+}
 .current-month-str {
   color: black;
   font-size: 28rpx;

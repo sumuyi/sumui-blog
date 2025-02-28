@@ -18,9 +18,9 @@ import lombok.Data;
 @Data
 public class BillTags implements Serializable {
     @TableId
-    private Long id;
-    private Long billId;
-    private Long tagId;
+    private String id;
+    private String billId;
+    private String tagId;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 }

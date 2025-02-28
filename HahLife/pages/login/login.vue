@@ -30,6 +30,10 @@ import { useUserStore } from '@/store/index.js'
 const userStore = useUserStore()
 
 const wechatLogin = () => {
+	uni.showLoading({
+		title: '正在登录...',
+		mask: true
+    })
 	// 这里可以调用uni.login等API实现微信登录
 	uni.login({
 		provider: 'weixin',
@@ -58,14 +62,13 @@ const wechatLogin = () => {
 const doLogin = (param) => {
 	console.log(param)
 	uni.request({
-		url: 'https://back.071020.xyz/auth/api/wx-login',
+		// url: 'https://back.071020.xyz/auth/api/wx-login',
+		url: 'http://localhost:9090/auth/api/wx-login',
 		method: 'POST',
 		data: param,
 		success: (res) => {
 			let { code, result } = res.data;
 			if (code === 200) {
-				console.log('登录成功，获取到的数据：', result);
-				
 				// 存储用户信息到本地
 				uni.setStorageSync('userId', result.userId);
 				uni.setStorageSync('tokenName', "Sa-token");
@@ -80,6 +83,7 @@ const doLogin = (param) => {
 				if (result.familyUsersList) {
 					userStore.setFamilyList(result.familyUsersList);
 				}
+				uni.hideLoading()
 
 				uni.switchTab({
 					url: "/pages/index/index"
