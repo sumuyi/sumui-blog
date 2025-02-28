@@ -26,6 +26,9 @@
 
 <script setup>
 import { useUserStore } from '@/store/index.js'
+import config from '@/config'
+
+const baseURL = config[process.env.NODE_ENV].baseURL
 
 const userStore = useUserStore()
 
@@ -62,8 +65,7 @@ const wechatLogin = () => {
 const doLogin = (param) => {
 	console.log(param)
 	uni.request({
-		// url: 'https://back.071020.xyz/auth/api/wx-login',
-		url: 'http://localhost:9090/auth/api/wx-login',
+		url: baseURL + '/auth/api/wx-login',
 		method: 'POST',
 		data: param,
 		success: (res) => {

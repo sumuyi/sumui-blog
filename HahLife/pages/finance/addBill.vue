@@ -90,12 +90,7 @@
       @confirm="confirmUser"
     ></uv-picker>
     <uv-toast ref="toast"></uv-toast>
-    <uv-calendar 
-      ref="pickerBillDateRef"
-      :show="showCalendar"
-      @confirm="confirmBillDate"
-      @close="showCalendar = false"
-    />
+    <l-calendar v-model:value="showCalendar" @change="confirmBillDate"></l-calendar>
   </view>
 </template>
 
@@ -216,17 +211,14 @@ const showPickerUser = async () => {
 }
 
 const showCalendar = ref(false)
-const pickerBillDateRef = ref(null)
 
 const showPickerBillDate = () => {
-  console.log('点击了日历');
-  
   showCalendar.value = true
 }
 
 const confirmBillDate = (e) => {
   console.log('选择的日期', e)
-  formState.billDate = timeFormat(new Date(e.fulldate).getTime(), "yyyy-mm-dd")
+  formState.billDate = e.result
   showCalendar.value = false
 }
 
@@ -266,7 +258,7 @@ const handleSave = async () => {
   }
 
   const billData = {
-    type: formState.type,
+    type: currentType.value,
     userId: formState.userId,
     amount: parseFloat(formState.amount),
     categoryId: formState.categoryId,
@@ -358,16 +350,16 @@ const handleKeyPress = async (key) => {
   } else if (isNaN(key)) {
     // 处理功能键
     switch (key) {
-      case 'delete':
+      case 'Del':
         handleDelete()
         break
-      case 'save':
+      case 'Save':
         await handleSave()
         break
-      case 'again':
+      case '+':
         handleAgain()
         break
-      case 'subway':
+      case '-':
         handleSubway()
         break
       case 'quick':

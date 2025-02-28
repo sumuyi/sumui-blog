@@ -43,8 +43,8 @@
         <view class="su-card-normal mb-10" v-for="(item, index) in group.items" :key="index">
           <view class="flex-between font-14">
             <view class="bill-category">{{ item.category }}</view>
-            <view class="bill-amount" :class="{ 'expense': item.type === 1 }">
-              ￥{{ item.type === 1 ? '-' : '+' }}{{ item.amount.toFixed(2) }}
+            <view class="bill-amount" :style="{ color: setColor(item.type) }">
+              ￥{{ item.type == 1 ? '-' : '+' }}{{ item.amount.toFixed(2) }}
             </view>
           </view>
           <view class="bill-time font-12">{{ item.userName || '-' }} | {{ item.remark || ' 无备注' }}</view>
@@ -88,6 +88,15 @@ import { billApi } from '@/api/bills'
 import { bookApi } from '@/api/books'
 import { timeFormat } from '@/uni_modules/uv-ui-tools/libs/function/index.js';
 
+const setColor = type => {
+	if(type == 1){
+		return '#ff4d4f'
+	} else if(type == 2){
+		return '#52c41a'
+	}else{
+		return 'black'
+	}
+}
 // 获取用户账本列表
 const currentBookName = ref('默认账本')
 const currentBookId = ref(null)
@@ -176,7 +185,7 @@ const categories = [
 ]
 
 // 添加新的响应式变量
-
+const cates = uni.CommonJS.categories
 // 获取账单数据
 const getFinance = async () => {
 	try {
@@ -211,8 +220,8 @@ const getFinance = async () => {
           type: bill.type,
           categoryId: bill.categoryId,
           remark: bill.remark,
-          category: categories.find(c => c.value === bill.categoryId)?.label || '其他',
-          icon: categories.find(c => c.value === bill.categoryId)?.icon || 'su-icon-qita'
+          category: cates.find(c => c.value == bill.categoryId)?.label || '其他',
+          icon: cates.find(c => c.value == bill.categoryId)?.icon || 'su-icon-qita'
         }))
       }
     }
@@ -434,6 +443,7 @@ onMounted(() => {
   }
 }
 .bill-amount {
+	font-weight: 600;
 	&.expense {
 		color: #ff4d4f;
 	}
