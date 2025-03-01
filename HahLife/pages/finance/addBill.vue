@@ -83,14 +83,9 @@
     <uv-picker ref="pickerBookRef" :columns="bookList" keyName="name" @confirm="confirmBook"></uv-picker>
     
 
-    <uv-picker 
-      ref="pickerUserRef" 
-      :columns="familyList" 
-      keyName="label" 
-      @confirm="confirmUser"
-    ></uv-picker>
+    <uv-picker ref="pickerUserRef" :columns="familyList" keyName="label" @confirm="confirmUser"></uv-picker>
     <uv-toast ref="toast"></uv-toast>
-    <l-calendar v-model:value="showCalendar" @change="confirmBillDate"></l-calendar>
+    <l-calendar v-model:value="showCalendar" @change="confirmBillDate" @input="cancelCalendar"></l-calendar>
   </view>
 </template>
 
@@ -138,6 +133,9 @@ const confirmBook = (e) => {
 const familyList = ref([[]])
 
 const formState = reactive({
+  previousAmount: 0,
+  operator: null,
+  expression: '',
   type: 1,
   userId: 1,
   userName: '苏木易',
@@ -219,6 +217,10 @@ const showPickerBillDate = () => {
 const confirmBillDate = (e) => {
   console.log('选择的日期', e)
   formState.billDate = e.result
+  // showCalendar.value = false
+}
+const cancelCalendar = (flag) => {
+  console.log('flag', flag)
   showCalendar.value = false
 }
 
@@ -240,7 +242,7 @@ const handleDelete = () => {
 
 const toast = ref(null)
 const handleSave = async () => {
-  if (!formState.amount) {
+    if (!formState.amount) {
     toast.value.show({
       message: '请输入金额',
       type: 'error',
@@ -331,6 +333,27 @@ const handleDecimalPoint = () => {
   }
 }
 
+// 修改后的handleKeyPress函数
+const handleKeyPress = async (key) => {
+  if (key === '.') {
+    handleDecimalPoint()
+  } else if (isNaN(key)) {
+    switch (key) {
+      case 'Del':
+        handleDelete()
+        break
+      case 'Save':  // 处理等号
+        await handleSave()
+        break
+      case '+':
+      case '-':
+        break
+    }
+  } else {
+    handleNumberInput(key)
+  }
+}
+
 const setColor = (key) => {
   if (key === 'Del') {
     return '#fae6e5'
@@ -340,35 +363,6 @@ const setColor = (key) => {
     return '#f3f3f3'
   } else {
     return '#ffffff'
-  }
-}
-
-// 修改后的 handleKeyPress 函数
-const handleKeyPress = async (key) => {
-  if (key === '.') {
-    handleDecimalPoint()
-  } else if (isNaN(key)) {
-    // 处理功能键
-    switch (key) {
-      case 'Del':
-        handleDelete()
-        break
-      case 'Save':
-        await handleSave()
-        break
-      case '+':
-        handleAgain()
-        break
-      case '-':
-        handleSubway()
-        break
-      case 'quick':
-        handleQuick()
-        break
-    }
-  } else {
-    // 处理数字输入
-    handleNumberInput(key)
   }
 }
 
