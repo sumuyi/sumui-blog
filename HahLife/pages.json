@@ -43,24 +43,31 @@
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"navigationBarBackgroundColor": "#e4f2fd",
+		"backgroundColor": "#e4f2fd"
 	},
 	"tabBar": {
 		"color": "#a9a9a9",
-		"selectedColor": "#66cdaa",
+		"selectedColor": "#1276ce",
+		"backgroundColor": "#e4f2fd",
 		"list": [
 			{
 				"text": "首页",
-				"pagePath": "pages/index/index"
+				"pagePath": "pages/index/index",
+				"iconPath": "static/icon/tabbar/index.png",
+				"selectedIconPath": "static/icon/tabbar/index-active.png"
 			},
 			{
 				"text": "记账",
-				"pagePath": "pages/finance/finance"
+				"pagePath": "pages/finance/finance",
+				"iconPath": "static/icon/tabbar/finance.png",
+				"selectedIconPath": "static/icon/tabbar/finance-active.png"
 			},
 			{
 				"text": "我的",
-				"pagePath": "pages/mine/mine"
+				"pagePath": "pages/mine/mine",
+				"iconPath": "static/icon/tabbar/mine.png",
+				"selectedIconPath": "static/icon/tabbar/mine-active.png"
 			}
 		]
 	},

@@ -14,16 +14,19 @@
 		<!-- 顶部统计栏 -->
     <view class="flex-between">
       <view class="statistic-card pd-tb20">
-        <uv-text type="info" text="总支出"></uv-text>
-        <uv-count-to :startVal="0" :endVal="statistics.totalExpense" :decimals="2" decimal="." color="#cf1322" bold></uv-count-to>
+        <uv-text type="info" text="总支出" size="14"></uv-text>
+        <uv-text :text="statistics.totalExpense || '0.00'" size="24"></uv-text>
+        <!-- <uv-count-to :startVal="0" :endVal="statistics.totalExpense" :decimals="2" decimal="." color="#cf1322" bold></uv-count-to> -->
       </view>
       <view class="statistic-card pd-tb20">
-        <uv-text type="info" text="总收入"></uv-text>
-        <uv-count-to :startVal="0" :endVal="statistics.totalIncome" :decimals="2" decimal="." color="#3f8600" bold></uv-count-to>
+        <uv-text type="info" text="总收入" size="14"></uv-text>
+        <uv-text :text="statistics.totalIncome || '0.00'" size="24"></uv-text>
+        <!-- <uv-count-to :startVal="0" :endVal="statistics.totalIncome" :decimals="2" decimal="." color="#3f8600" bold></uv-count-to> -->
       </view>
       <view class="statistic-card pd-tb20">
-        <uv-text type="info" text="结余"></uv-text>
-        <uv-count-to :startVal="0" :endVal="statistics.balance" :decimals="2" decimal="." bold></uv-count-to>
+        <uv-text type="info" text="结余" size="14"></uv-text>
+        <uv-text :text="statistics.balance || '0.00'" size="24"></uv-text>
+        <!-- <uv-count-to :startVal="0" :endVal="statistics.balance" :decimals="2" decimal="." bold></uv-count-to> -->
       </view>
     </view>
 		<!-- 账单列表 -->
@@ -35,8 +38,8 @@
           <span class="day-label">{{ getDayLabel(group.date) }}</span>
         </view>
         <view class="daily-total">
-          <span>出 {{ group.totalExpense.toFixed(2) }}</span>
-          <span>入 {{ group.totalIncome.toFixed(2) }}</span>
+          <text>出 ￥{{ group.totalExpense.toFixed(2) }}</text>
+          <text>入 ￥{{ group.totalIncome.toFixed(2) }}</text>
         </view>
       </view>
       <view class="su-card-body">
@@ -333,7 +336,7 @@ onMounted(() => {
   color: black;
   font-size: 28rpx;
   font-weight: bold;
-  background: #999;
+  background: #d4ebf9;
   padding: 10rpx 20rpx;
   border-radius: 30rpx;
 }
@@ -430,7 +433,7 @@ onMounted(() => {
 .daily-total {
   font-size: 14px;
 
-  span {
+  text {
     margin-left: 16px;
 
     &:first-child {

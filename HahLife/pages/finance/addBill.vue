@@ -44,7 +44,7 @@
     </view>
 
     <!-- 金额和键盘 -->
-    <view>
+    <view class="amount-keyboard">
       <!-- 底部计算器操作 -->
       <view class="operate-box flex-between">
         <view class="flex">
@@ -60,6 +60,10 @@
 
         <!-- 金额显示 -->
         <view class="amount-display">
+          <!-- 添加表达式显示 -->
+          <view class="expression" v-if="tempAmount && operator">
+            {{ tempAmount }} {{ operator }} {{ isWaitingForNumber ? '' : formState.amount }}
+          </view>
           <text class="currency">¥</text>
           <text class="amount">{{ formState.amount || '0.00' }}</text>
         </view>
@@ -133,9 +137,6 @@ const confirmBook = (e) => {
 const familyList = ref([[]])
 
 const formState = reactive({
-  previousAmount: 0,
-  operator: null,
-  expression: '',
   type: 1,
   userId: 1,
   userName: '苏木易',
@@ -145,6 +146,11 @@ const formState = reactive({
   billDate: timeFormat(new Date().getTime(), "yyyy-mm-dd"),
   remark: undefined
 })
+
+// 添加计算相关的状态
+const tempAmount = ref('') // 存储上一个数字
+const operator = ref('') // 存储运算符
+const isWaitingForNumber = ref(false) // 是否在等待输入新数字
 
 // 类型切换
 const currentType = ref(1)
@@ -225,15 +231,82 @@ const cancelCalendar = (flag) => {
 }
 
 
-// 数字键盘布局
+// 修改数字键盘布局，将 '00' 改为 '='
 const keyboardLayout = [
   ['1', '2', '3', 'Del'],
   ['4', '5', '6', '+'],
   ['7', '8', '9', '-'],
-  ['00', '0', '.', 'Save']
+  ['=', '0', '.', 'Save']
 ]
 
-// 抽离处理函数
+// 修改数字输入处理函数
+const handleNumberInput = (key) => {
+  // 如果在等待输入新数字，清空当前显示的数字
+  if (isWaitingForNumber.value) {
+    formState.amount = ''
+    isWaitingForNumber.value = false
+  }
+
+  if (!formState.amount) {
+    formState.amount = key
+  } else {
+    if (formState.amount.includes('.')) {
+      if (key === '00') return
+      const [integer, decimal = ''] = formState.amount.split('.')
+      if (decimal.length < 2) {
+        formState.amount = `${integer}.${decimal}${key}`
+      }
+    } else {
+      formState.amount += key
+    }
+  }
+}
+
+// 计算结果
+const calculate = () => {
+  if (!tempAmount.value || !operator.value || !formState.amount) return
+
+  const num1 = parseFloat(tempAmount.value)
+  const num2 = parseFloat(formState.amount)
+  let result = 0
+
+  switch (operator.value) {
+    case '+':
+      result = num1 + num2
+      break
+    case '-':
+      result = num1 - num2
+      break
+  }
+
+  return result.toFixed(2)
+}
+
+// 修改处理运算符函数
+const handleOperator = (op) => {
+  // 如果没有输入数字，不允许输入运算符
+  if (!formState.amount) return
+  
+  // 如果已经有一个运算符和临时数字，先计算结果
+  if (operator.value && tempAmount.value) {
+    // 保存当前表达式
+    const currentExpression = `${tempAmount.value} ${operator.value} ${formState.amount}`
+    const result = calculate()
+    
+    // 更新显示
+    tempAmount.value = result
+    formState.amount = result
+  } else {
+    // 保存当前数字
+    tempAmount.value = formState.amount
+  }
+  
+  // 设置新的运算符
+  operator.value = op
+  isWaitingForNumber.value = true
+}
+
+// 修改删除函数
 const handleDelete = () => {
   if (formState.amount) {
     formState.amount = formState.amount.slice(0, -1)
@@ -242,7 +315,15 @@ const handleDelete = () => {
 
 const toast = ref(null)
 const handleSave = async () => {
-    if (!formState.amount) {
+  // 如果有未完成的计算，先计算结果
+  if (operator.value && tempAmount.value) {
+    const result = calculate()
+    formState.amount = result
+    tempAmount.value = ''
+    operator.value = ''
+  }
+
+  if (!formState.amount) {
     toast.value.show({
       message: '请输入金额',
       type: 'error',
@@ -307,25 +388,6 @@ const handleQuick = () => {
   console.log('秒记')
 }
 
-const handleNumberInput = (key) => {
-  if (!formState.amount) {
-    formState.amount = key
-  } else {
-    if (formState.amount.includes('.')) {
-      if (key === '00') {
-      	return
-      }
-      const [integer, decimal = ''] = formState.amount.split('.')
-      // 只有当小数部分长度小于2时才允许继续输入
-      if (decimal.length < 2) {
-        formState.amount = `${integer}.${decimal}${key}`
-      }
-    } else {
-      formState.amount += key
-    }
-  }
-}
-
 const handleDecimalPoint = () => {
   // 如果已经有小数点，则不再添加
   if (!formState.amount || !formState.amount.includes('.')) {
@@ -333,20 +395,28 @@ const handleDecimalPoint = () => {
   }
 }
 
-// 修改后的handleKeyPress函数
+// 修改键盘按键处理函数
 const handleKeyPress = async (key) => {
   if (key === '.') {
     handleDecimalPoint()
+  } else if (key === '+' || key === '-') {
+    handleOperator(key)
+  } else if (key === '=') {
+    // 如果有未完成的计算，计算结果
+    if (operator.value && tempAmount.value && formState.amount) {
+      const result = calculate()
+      formState.amount = result
+      tempAmount.value = ''
+      operator.value = ''
+      isWaitingForNumber.value = false
+    }
   } else if (isNaN(key)) {
     switch (key) {
       case 'Del':
         handleDelete()
         break
-      case 'Save':  // 处理等号
+      case 'Save':
         await handleSave()
-        break
-      case '+':
-      case '-':
         break
     }
   } else {
@@ -354,12 +424,13 @@ const handleKeyPress = async (key) => {
   }
 }
 
+// 修改按键颜色设置
 const setColor = (key) => {
   if (key === 'Del') {
     return '#fae6e5'
   } else if (key === 'Save') {
     return '#007aff'
-  } else if (key === '+' || key === '-' || key === '.') {
+  } else if (key === '+' || key === '-' || key === '=') {
     return '#f3f3f3'
   } else {
     return '#ffffff'
@@ -412,6 +483,13 @@ onLoad(operation => {
 </script>
 
 <style lang="scss" scoped>
+.amount-keyboard {
+	position: relative;
+  bottom: 0;
+}
+::v-deep .uv-textarea .uv-textarea__field {
+	height: 40rpx !important;
+}
 .current-book-name {
   font-size: 28rpx;
   color: black;
@@ -431,14 +509,22 @@ onLoad(operation => {
   font-size: 64rpx;
   font-weight: bold;
   color: #333;
-}
-
-.amount-display .currency {
-  font-size: 24px;
-  margin-right: 4px;
-}
-.amount-display .amount {
-  color: #fe3730;
+  
+  .expression {
+    font-size: 28rpx;
+    color: #666;
+    min-height: 40rpx;
+    margin-bottom: 10rpx;
+  }
+  
+  .currency {
+    font-size: 24px;
+    margin-right: 4px;
+  }
+  
+  .amount {
+    color: #fe3730;
+  }
 }
 
 .number-keyboard {
@@ -527,7 +613,26 @@ onLoad(operation => {
 	}
 }
 .add-bill-container {
-  padding: 40rpx 0;
+  padding-top: 40rpx;
   background-color: #f9f9f9;
+}
+
+.amount-section {
+  padding: 20rpx;
+  
+  .expression {
+    text-align: right;
+    font-size: 28rpx;
+    color: #666;
+    min-height: 40rpx;
+    margin-bottom: 10rpx;
+  }
+}
+
+.keyboard-row .num-btn {
+  &.operator-active {
+    background-color: #1890ff !important;
+    color: #fff !important;
+  }
 }
 </style>
