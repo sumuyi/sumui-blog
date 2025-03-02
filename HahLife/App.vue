@@ -33,6 +33,7 @@ export default {
 	@import "./static/iconfont.css";
 	page{
 		width: 100vw;
+		height: 100vh;
 		background-color: #e4f2fd;
 	}
 	/* 卡片样式 */

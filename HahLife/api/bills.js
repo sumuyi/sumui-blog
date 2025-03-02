@@ -14,7 +14,7 @@ export const billApi = {
   getDetail: (id) => request.get(`${baseURL}/bill/detail/${id}`),
   
   // 删除账单
-  delete: (id) => request.delete(`${baseURL}/bill/${id}`),
+  delete: (id) => request.delete(`${baseURL}/bill/delete/${id}`),
 
   // 获取统计数据
   getStatistics: (bookId, month) => request.get(`${baseURL}/bill/statistics/${bookId}/${month}`)

@@ -43,7 +43,11 @@
         </view>
       </view>
       <view class="su-card-body">
-        <view class="su-card-normal mb-10" v-for="(item, index) in group.items" :key="index">
+        <view class="su-card-normal mb-10" 
+          v-for="(item, index) in group.items" 
+          :key="index"
+          @click="showBillDetail(item)"
+        >
           <view class="flex-between font-14">
             <view class="bill-category">{{ item.category }}</view>
             <view class="bill-amount" :style="{ color: setColor(item.type) }">
@@ -80,6 +84,71 @@
     <view class="fixed-bottom-right-button">
       <uv-button icon="plus" @click="showPopupAddBill" shape="circle" color="#3c9cff" iconColor="#fff"></uv-button>
     </view>
+
+    <!-- 添加账单详情弹框 -->
+    <uv-popup ref="popupBillDetailRef" :close-on-click-overlay="false" mode="bottom" round="16">
+      <view class="bill-detail">
+        <!-- 标题和关闭按钮 -->
+        <view class="detail-header">
+          <text class="title">账单详情</text>
+          <uv-icon name="close" @click="popupBillDetailRef.value.close()" size="20"></uv-icon>
+        </view>
+        
+        <!-- 操作按钮组 -->
+        <view class="action-group">
+          <view class="action-item">
+            <uv-icon name="clock" size="24"></uv-icon>
+            <text>统计</text>
+          </view>
+          <view class="action-item">
+            <uv-icon name="reload" color="#ff9900" size="24"></uv-icon>
+            <text style="color: #ff9900;">退款</text>
+          </view>
+          <view class="action-item" @click="handleDelete">
+            <uv-icon name="trash" color="#ff0000" size="24"></uv-icon>
+            <text style="color: #ff0000;">删除</text>
+          </view>
+          <view class="action-item" @click="handleEdit">
+            <uv-icon name="edit-pen" color="#2979ff" size="24"></uv-icon>
+            <text style="color: #2979ff;">编辑</text>
+          </view>
+        </view>
+
+        <!-- 详情内容 -->
+        <view class="detail-content">
+          <view class="detail-item">
+            <text class="label">金额</text>
+            <text class="value amount" :style="{ color: setColor(currentBill?.type) }">
+              {{ currentBill?.type === 1 ? '-' : '+' }}{{ currentBill?.amount?.toFixed(2) }}
+            </text>
+          </view>
+          <view class="detail-item">
+            <text class="label">分类</text>
+            <text class="value">{{ currentBill?.category }}</text>
+          </view>
+          <view class="detail-item">
+            <text class="label">账本</text>
+            <text class="value">{{ currentBill?.bookName }}</text>
+          </view>
+          <view class="detail-item">
+            <text class="label">账户</text>
+            <text class="value">现金钱包</text>
+          </view>
+          <view class="detail-item">
+            <text class="label">标签</text>
+            <text class="value">-</text>
+          </view>
+          <view class="detail-item">
+            <text class="label">日期</text>
+            <text class="value">{{ currentBill?.billDate }}</text>
+          </view>
+          <view class="detail-item">
+            <text class="label">备注</text>
+            <text class="value">{{ currentBill?.remark || '-' }}</text>
+          </view>
+        </view>
+      </view>
+    </uv-popup>
 
 	</view>
 </template>
@@ -175,17 +244,6 @@ const monthMap = {
 }
 // 当前选中的月份索引
 const currentMonthIndex = ref(new Date().getMonth() + 1)
-
-// 分类数据
-const categories = [
-  { label: '三餐', value: 1, icon: 'su-icon-sancanshuiping' },
-  { label: '水果蔬菜', value: 2, icon: 'su-icon-shuiguoshucai' },
-  { label: '咖啡饮品', value: 3, icon: 'su-icon-kafeiguan' },
-  { label: '话费', value: 4, icon: 'su-icon-huafei' },
-  { label: '购物', value: 5, icon: 'su-icon-gouwu' },
-  { label: '火锅', value: 6, icon: 'su-icon-huoguo' }
-  // ... 添加更多分类
-]
 
 // 添加新的响应式变量
 const cates = uni.CommonJS.categories
@@ -324,6 +382,60 @@ onShow(() => {
 onMounted(() => {
   getBookList()
 })
+
+const popupBillDetailRef = ref(null)
+const currentBill = ref(null)
+
+// 显示账单详情
+const showBillDetail = async (item) => {
+  await nextTick()
+  if (popupBillDetailRef.value) {
+    currentBill.value = item
+    popupBillDetailRef.value.open()
+  }
+}
+
+// 处理退款
+const handleRefund = () => {
+  // 实现退款逻辑
+  showDetail.value = false
+}
+
+// 处理删除
+const handleDelete = () => {
+  uni.showModal({
+    title: '提示',
+    content: '确定要删除这条记录吗？',
+    success: async (res) => {
+      if (res.confirm) {
+        try {
+          uni.showLoading({ title: '删除中...' })
+          let res = await billApi.delete(currentBill.value.id)
+          uni.hideLoading()
+          if (res.code != 200) {
+            uni.showToast({ title: '删除失败', icon: 'error' })
+            return
+          }
+          uni.showToast({ title: '删除成功', icon: 'success' })
+          setTimeout(() => {
+            popupBillDetailRef.value.close()
+            refreshList()
+          }, 1000)
+        } catch (error) {
+          uni.hideLoading()
+          uni.showToast({ title: '删除失败', icon: 'error' })
+          console.error('删除失败:', error)
+        }
+      }
+    }
+  })
+}
+
+// 处理编辑
+const handleEdit = () => {
+  // 实现编辑逻辑
+  showDetail.value = false
+}
 </script>
 
 <style lang="scss" scoped>
@@ -583,5 +695,78 @@ onMounted(() => {
     width: 80rpx;
     height: 80rpx;
     border-radius: 50%;
+}
+
+.bill-detail {
+  padding: 30rpx;
+  background-color: #fff;
+  
+  .detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20rpx;
+    
+    .title {
+      font-size: 32rpx;
+      font-weight: 500;
+      color: #333;
+    }
+  }
+  
+  .action-group {
+    display: flex;
+    justify-content: space-around;
+    padding: 30rpx 0;
+    border-bottom: 1px solid #eee;
+    
+    .action-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8rpx;
+      
+      text {
+        font-size: 24rpx;
+        color: #666;
+      }
+    }
+  }
+  
+  .detail-content {
+    padding-top: 20rpx;
+    
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24rpx 0;
+      font-size: 28rpx;
+      border-bottom: 1px solid #f5f5f5;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      .label {
+        color: #999;
+      }
+      
+      .value {
+        color: #333;
+        
+        &.amount {
+          font-size: 32rpx;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+}
+
+.su-card-normal {
+  &:active {
+    background-color: #f5f5f5;
+  }
 }
 </style>

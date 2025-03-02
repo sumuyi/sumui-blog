@@ -17,7 +17,8 @@ const service = {
         success: (res) => {
           const { code, message, result } = res.data
           if (code === 200) {
-            resolve(result)
+            const data = {code, message}
+            resolve(result ? result : data)
           } else {
             uni.showToast({
               title: message || '请求失败',

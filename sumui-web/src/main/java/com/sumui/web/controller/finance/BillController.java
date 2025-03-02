@@ -17,10 +17,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/bill")
 public class BillController {
-    
+
     @Resource
     private BillsService billsService;
-    
+
     @PostMapping("/add")
     public ReqResult<Void> saveBill(@RequestBody BillDTO billDTO) {
         try {
@@ -48,6 +48,17 @@ public class BillController {
         try {
             Map<String, Object> billStatistics = billsService.getBillStatistics(bookId, month);
             return ReqResult.ok(billStatistics);
+        } catch (Exception e) {
+            return ReqResult.fail(StatusEnum.BILL_SAVE_ERROR);
+        }
+    }
+
+    @ApiOperation("删除账单")
+    @DeleteMapping("delete/{id}")
+    public ReqResult<Map<String, Object>> getBillStatistics(@PathVariable String id) {
+        try {
+            billsService.removeById(id);
+            return ReqResult.ok();
         } catch (Exception e) {
             return ReqResult.fail(StatusEnum.BILL_SAVE_ERROR);
         }

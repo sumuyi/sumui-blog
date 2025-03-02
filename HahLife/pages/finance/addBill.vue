@@ -567,7 +567,7 @@ onLoad(operation => {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
-  height: 530rpx;
+  height: 590rpx;
 }
 
 .category-container {
