@@ -38,6 +38,13 @@
 			{
 				"navigationBarTitleText" : "登录"
 			}
+		},
+		{
+			"path" : "pages/mine/edit",
+			"style" : 
+			{
+				"navigationBarTitleText" : "修改个人信息"
+			}
 		}
 	],
 	"globalStyle": {
