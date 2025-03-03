@@ -91,16 +91,16 @@
         <!-- 标题和关闭按钮 -->
         <view class="detail-header">
           <text class="title">账单详情</text>
-          <uv-icon name="close" @click="popupBillDetailRef.value.close()" size="20"></uv-icon>
+          <uv-icon name="close" @click="cancelDetail" size="20"></uv-icon>
         </view>
         
         <!-- 操作按钮组 -->
         <view class="action-group">
-          <view class="action-item">
+          <view class="action-item" @click="handleEdit">
             <uv-icon name="clock" size="24"></uv-icon>
             <text>统计</text>
           </view>
-          <view class="action-item">
+          <view class="action-item" @click="handleEdit">
             <uv-icon name="reload" color="#ff9900" size="24"></uv-icon>
             <text style="color: #ff9900;">退款</text>
           </view>
@@ -398,7 +398,11 @@ const showBillDetail = async (item) => {
 // 处理退款
 const handleRefund = () => {
   // 实现退款逻辑
-  showDetail.value = false
+  uni.showToast({ title: '暂未开发', icon: 'warning' })
+}
+
+const cancelDetail = () => {
+  popupBillDetailRef.value.close()
 }
 
 // 处理删除
@@ -434,7 +438,7 @@ const handleDelete = () => {
 // 处理编辑
 const handleEdit = () => {
   // 实现编辑逻辑
-  showDetail.value = false
+  uni.showToast({ title: '暂未开发', icon: 'warning' })
 }
 </script>
 

@@ -34,7 +34,7 @@ export default {
 	page{
 		width: 100vw;
 		height: 100vh;
-		background-color: #e4f2fd;
+		background-color: #f9f9f9;
 	}
 	/* 卡片样式 */
 	.su-card-normal {

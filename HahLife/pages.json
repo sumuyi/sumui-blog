@@ -43,13 +43,13 @@
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#e4f2fd",
-		"backgroundColor": "#e4f2fd"
+		"navigationBarBackgroundColor": "#f9f9f9",
+		"backgroundColor": "#f9f9f9"
 	},
 	"tabBar": {
 		"color": "#a9a9a9",
 		"selectedColor": "#1276ce",
-		"backgroundColor": "#e4f2fd",
+		"backgroundColor": "#f9f9f9",
 		"list": [
 			{
 				"text": "首页",

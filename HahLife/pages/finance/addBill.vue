@@ -484,8 +484,9 @@ onLoad(operation => {
 
 <style lang="scss" scoped>
 .amount-keyboard {
-	position: relative;
+	position: absolute;
   bottom: 0;
+  width: 100%;
 }
 ::v-deep .uv-textarea .uv-textarea__field {
 	height: 40rpx !important;
@@ -557,7 +558,7 @@ onLoad(operation => {
 }
 
 .operate-box {
-  padding: 20rpx;
+  padding: 0 20rpx;
   .user-name {
     font-size: 24rpx;
     color: #535454;
@@ -567,7 +568,7 @@ onLoad(operation => {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
-  height: 590rpx;
+  max-height: 710rpx;
 }
 
 .category-container {
