@@ -173,3 +173,11 @@ wechat:
   url: https://api.weixin.qq.com/sns/jscode2session?grant_type=authorization_code
   access_token_url: https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential
 
+minio:
+  endpoint: http://192.168.150.101:9000
+  frp-endpoint: https://flk-minio.071020.xyz
+  access-key: z5BRfeIBevU9TGWBEKjc
+  secret-key: Foqs9Q1oPdJjord95eWdRQDAgHxAIToLscRIdLKZ
+  bucket: sumui-finance
+  secure: true
+  region: us-east-1

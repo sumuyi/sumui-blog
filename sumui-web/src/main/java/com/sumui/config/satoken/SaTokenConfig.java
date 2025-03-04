@@ -38,7 +38,7 @@ public class SaTokenConfig implements WebMvcConfigurer {
                     SaRouter
                             // 获取所有的
                             .match("/**")
-                            .notMatch("/auth/**")             // 排除认证相关路径
+                            .notMatch("/auth/**","/api/files/**")             // 排除认证相关路径
                             .notMatch("/doc.html")            // 排除文档接口
                             .notMatch("/webjars/**")          // 排除静态资源
                             .notMatch("/swagger-resources")   // 排除 Swagger 资源
