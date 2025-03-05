@@ -19,6 +19,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -41,7 +42,9 @@ public class FileStorageService {
         }
         // 设置存储路径和文件名
         String filePath = "/avatar/" + userId;
-        String fileName = DateUtil.format(LocalDateTime.now(), "yyyyMMddHHmmss");
+        String fileName = DateUtil.format(LocalDateTime.now(), "yyyyMMddHHmmss") +
+                Objects.requireNonNull(file.getOriginalFilename())
+                        .substring(file.getOriginalFilename().lastIndexOf("."));
         // 上传头像
         String fileUrl = uploadFile(file, filePath, fileName);
         if (StrUtil.isNotBlank(fileUrl) && fileUrl.startsWith(frpEndpoint)) {
@@ -72,12 +75,12 @@ public class FileStorageService {
                 .contentType(file.getContentType())
                 .build()
         );
-        return getSimpleFileUrl(filePath + objectName);
+        return getSimpleFileUrl(filePath + "/" + objectName);
     }
 
     public String getSimpleFileUrl(String fileAllPathName) throws Exception {
         if (StringUtils.hasText(frpEndpoint)) {
-            return frpEndpoint + "/" + bucketName + "/" + fileAllPathName;
+            return frpEndpoint + bucketName  + fileAllPathName;
         }
         return null;
     }
