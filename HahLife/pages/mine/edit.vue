@@ -25,6 +25,9 @@
 
 <script setup>
 import { ref } from 'vue';
+import config from '@/config'
+
+const baseURL = config[process.env.NODE_ENV].baseURL
 
 const userInfo = ref({
   avatarUrl: '',
@@ -35,29 +38,80 @@ const userInfo = ref({
 const onChooseAvatar = (e) => {
   // 获取临时文件路径
   const tempFilePath = e.detail.avatarUrl;
+
+	// 显示上传中提示
+	uni.showLoading({
+		title: '上传中...'
+	});
   
-  // 使用uni.uploadFile上传到服务器或保存到本地
-  // 这里先简单地将临时文件保存到本地
-  uni.saveFile({
-    tempFilePath: tempFilePath,
-    success: function(res) {
-      const savedFilePath = res.savedFilePath;
-      console.log('保存成功，文件路径：', savedFilePath);
-      
-      // 更新头像URL
-      userInfo.value.avatarUrl = savedFilePath;
-      
-      // 保存到本地存储
-      uni.setStorageSync('userAvatarUrl', savedFilePath);
-    },
-    fail: function(err) {
-      console.error('保存文件失败：', err);
-      
-      // 如果保存失败，可以尝试直接使用临时路径
-      userInfo.value.avatarUrl = tempFilePath;
-      uni.setStorageSync('userAvatarUrl', tempFilePath);
-    }
-  });
+	// 上传文件到服务器
+	uni.uploadFile({
+		url: baseURL + '/api/files/upload/avatar', // 替换为你的服务器上传接口
+		filePath: tempFilePath,
+		name: 'file',// 服务器接收文件的字段名
+		formData: {
+			'userId': uni.getStorageSync('userId') || '', // 可以添加用户ID等额外信息
+			'type': 'avatar'
+		},
+		success: (uploadRes) => {
+			uni.hideLoading();
+			console.log('uploadRes', uploadRes);
+			
+
+			// 解析服务器返回的数据
+			let data;
+			try {
+				data = JSON.parse(uploadRes.data);
+			} catch (e) {
+				console.error('解析响应数据失败:', e);
+				data = uploadRes.data;
+			}
+
+			// 判断上传是否成功
+			if (data.code === 200) { // 根据你的服务器返回格式调整
+				// 获取服务器返回的图片URL
+				const avatarUrl = data.result;
+
+				// 更新头像URL
+				userInfo.value.avatarUrl = avatarUrl;
+
+				// 保存到本地存储
+				uni.setStorageSync('userAvatarUrl', avatarUrl);
+
+				uni.showToast({
+					title: '头像上传成功',
+					icon: 'success'
+				});
+			} else {
+				// 未授权访问
+				if (data.status.code === 401) {
+					// 清除本地缓存，并跳转到登录页
+					uni.clearStorageSync();
+					uni.redirectTo({
+						url: '/pages/login/login'
+					})
+					return
+				}
+				uni.showToast({
+					title: '上传失败：' + (data.msg || '未知错误'),
+					icon: 'none'
+				});
+			}
+		},
+		fail: (err) => {
+			uni.hideLoading();
+			console.error('上传文件失败：', err);
+
+			uni.showToast({
+				title: '上传失败，请重试',
+				icon: 'none'
+			});
+
+			// 如果上传失败，可以尝试直接使用临时路径
+			userInfo.value.avatarUrl = tempFilePath;
+			uni.setStorageSync('userAvatarUrl', tempFilePath);
+		}
+	});
 };
 
 // 输入昵称回调

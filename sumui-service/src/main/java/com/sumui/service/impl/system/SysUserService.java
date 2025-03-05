@@ -30,4 +30,12 @@ public interface SysUserService extends IService<SysUser> {
     Boolean userIsExist(String userName);
 
     void wxUserInfo(String accessToken, String openId);
+
+    /**
+     * 更新用户头像
+     * @param userId    用户ID
+     * @param filePath  文件路径
+     * @param fileName  文件名
+     */
+    void updateUserAvatar(String userId, String filePath, String fileName);
 }

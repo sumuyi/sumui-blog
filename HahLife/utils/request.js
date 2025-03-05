@@ -15,11 +15,20 @@ const service = {
         ...options,
         header: header,
         success: (res) => {
-          const { code, message, result } = res.data
+          const { code, message, result, status } = res.data
           if (code === 200) {
             const data = {code, message}
             resolve(result ? result : data)
           } else {
+            // 未授权访问
+            if (status.code === 401) {
+              // 清除本地缓存，并跳转到登录页
+              uni.clearStorageSync();
+              uni.redirectTo({
+                url: '/pages/login/login'
+              })
+              return
+            }
             uni.showToast({
               title: message || '请求失败',
               icon: 'none'

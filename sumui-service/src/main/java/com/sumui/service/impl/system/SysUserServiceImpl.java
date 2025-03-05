@@ -6,7 +6,9 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.sumui.common.constants.StatusEnum;
 import com.sumui.common.exception.ApiException;
+import com.sumui.common.exception.BizException;
 import com.sumui.common.model.security.RegisterUserInfo;
 import com.sumui.common.model.system.SysUser;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -143,5 +145,26 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 //                return ReqResult.fail(StatusEnum.FAIL, "获取用户信息失败");
 //            }
 //        }
+    }
+
+    /**
+     * 更新用户头像
+     *
+     * @param userId   用户ID
+     * @param filePath 文件路径
+     * @param fileName 文件名
+     */
+    @Override
+    public void updateUserAvatar(String userId, String filePath, String fileName) {
+        if (StrUtil.isBlank(userId)){
+            throw new BizException(StatusEnum.ILLEGAL_ARGUMENTS);
+        }
+        if (StrUtil.isBlank(filePath) || StrUtil.isBlank(fileName)){
+            throw new BizException(StatusEnum.ILLEGAL_ARGUMENTS);
+        }
+        this.lambdaUpdate()
+                .set(SysUser::getAvatar, filePath + fileName)
+                .eq(SysUser::getId, userId)
+                .update();
     }
 }
