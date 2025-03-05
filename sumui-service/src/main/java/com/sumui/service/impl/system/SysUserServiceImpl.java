@@ -1,5 +1,6 @@
 package com.sumui.service.impl.system;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -163,8 +164,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
             throw new BizException(StatusEnum.ILLEGAL_ARGUMENTS);
         }
         this.lambdaUpdate()
-                .set(SysUser::getAvatar, filePath + fileName)
+                .set(SysUser::getAvatar, filePath + "/" + fileName)
                 .eq(SysUser::getId, userId)
                 .update();
+    }
+
+    @Override
+    public Boolean updateUserNickName(SysUser user) {
+        if (StrUtil.isBlank(user.getId())){
+            throw new NotLoginException(NotLoginException.DEFAULT_MESSAGE, "401", "");
+        }
+        if (StrUtil.isBlank(user.getNickname()) && StrUtil.isBlank(user.getUsername())){
+            throw new BizException(StatusEnum.ILLEGAL_ARGUMENTS);
+        }
+        return this.updateById(user);
     }
 }

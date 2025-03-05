@@ -112,8 +112,13 @@ public class BillsServiceImpl extends ServiceImpl<BillsMapper, Bills> implements
             });
             // 按日期分组 并降序
             dtoList.sort((o1, o2) -> o2.getBillDate().compareTo(o1.getBillDate()));
-            // key指定日期格式
-            return dtoList.stream().collect(Collectors.groupingBy(BillDTO::getBillDate));
+            // key指定日期格式,并降序
+            return dtoList.stream()
+                    .collect(Collectors.groupingBy(
+                            BillDTO::getBillDate,
+                            () -> new java.util.TreeMap<String, List<BillDTO>>(java.util.Collections.reverseOrder()),
+                            Collectors.toList()
+                    ));
         }
         return MapUtil.empty();
     }

@@ -1,6 +1,10 @@
 package com.sumui.common.exception;
 
+
 import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.NotPermissionException;
+import cn.dev33.satoken.exception.NotRoleException;
+import cn.dev33.satoken.exception.SaTokenException;
 import cn.hutool.core.util.StrUtil;
 import com.sumui.common.constants.ErrorCodeEnum;
 import com.sumui.common.model.ReqResult;
@@ -32,95 +36,33 @@ public class GlobalExceptionHandler {
     final String REGX_DUPLICATE_KEY = "Duplicate entry '(.*)' for key '(.*)'";
 
     /**
-     * 业务异常
-     * @param e 异常
-     * @return 统一返回结果
+     * Sa-Token 权限认证异常
      */
-    @ExceptionHandler(BizException.class)
-    public ReqResult<Void> handleBizException(BizException e) {
-        log.error("业务异常：{}", e.getMessage());
-        return ReqResult.fail(e.getCode(), e.getMessage());
+    @ExceptionHandler(NotPermissionException.class)
+    public ReqResult<?> handleNotPermissionException(NotPermissionException e) {
+        log.error("没有权限，{}", e.getMessage());
+        return ReqResult.fail("没有权限访问：" + e.getMessage());
     }
 
     /**
-     * 基础异常处理
+     * Sa-Token 角色认证异常
      */
-    @ExceptionHandler(ApiException.class)
-    public ReqResult<Object> exception(Exception ex, HttpServletRequest request, HttpServletResponse response) {
-        return buildBody(ex, request.getRequestURI());
+    @ExceptionHandler(NotRoleException.class)
+    public ReqResult<?> handleNotRoleException(NotRoleException e) {
+        log.error("没有角色，{}", e.getMessage());
+        return ReqResult.fail("没有角色权限：" + e.getMessage());
     }
 
     /**
-     * 用户异常处理
+     * Sa-Token 未登录异常
      */
-    @ExceptionHandler(UserException.class)
-    public ReqResult<Object> userException(UserException ex, HttpServletRequest request, HttpServletResponse response) {
-        ReqResult<Object> reqResult = new ReqResult<>();
-        reqResult.setResult(request.getRequestURI());
-        reqResult.setStatus(Status.newStatus(ex.getStatus().getCode(),ex.getStatus().getMsg()));
-        return reqResult;
-    }
-
-    /**
-     * 处理因为数据库唯一索引导致的异常
-     */
-    @ExceptionHandler(DuplicateKeyException.class)
-    public ReqResult<Object> duplicateKeyException(DuplicateKeyException ex, HttpServletRequest request, HttpServletResponse response) {
-        String errorMessage = StrUtil.blankToDefault(Optional.ofNullable(ex.getCause()).map(Throwable::getMessage).orElse(null), ex.getMessage());
-        if (StrUtil.isBlank(errorMessage)) {
-            return buildBody(ex, request.getRequestURI());
-        }
-        // 提取重复字段
-        Matcher matcher = Pattern.compile(REGX_DUPLICATE_KEY).matcher(errorMessage);
-        if (matcher.find()) {
-            String duplicateField = matcher.group(2);
-            String duplicateFieldValue = matcher.group(1);
-            if (StrUtil.isNotBlank(duplicateField)) {
-                return buildBody(StrUtil.format("[{}]({})数据重复", duplicateField, duplicateFieldValue), ErrorCodeEnum.INTERNAL_SERVER_ERROR.getCode(), request.getRequestURI());
-            }
-        }
-        return buildBody(ex, request.getRequestURI());
-    }
-
-    /**
-     * 处理请求参数缺失异常
-     */
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ReqResult<Object> missingServletRequestParameterException(MissingServletRequestParameterException ex, HttpServletRequest request, HttpServletResponse response) {
-        String errorMessage = StrUtil.format("缺失请求参数[{}]" , ex.getParameterName());
-        return buildBody(errorMessage, ErrorCodeEnum.INTERNAL_SERVER_ERROR.getCode(), request.getRequestURI());
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ReqResult<Object> dataIntegrityViolationException(DataIntegrityViolationException ex, HttpServletRequest request, HttpServletResponse response) {
-        String errorMessage = StrUtil.blankToDefault(Optional.ofNullable(ex.getCause()).map(Throwable::getMessage).orElse(null), ex.getMessage());
-        if (StrUtil.isBlank(errorMessage)) {
-            return buildBody(ex, request.getRequestURI());
-        }
-        String passwordRegex = "'([^']+)'";
-        Pattern pattern = Pattern.compile(passwordRegex);
-        Matcher matcher = pattern.matcher(errorMessage);
-        if (matcher.find()) {
-            String errField = matcher.group(1);
-            return buildBody(StrUtil.format("[{}]长度超过限制" , errField), ErrorCodeEnum.INTERNAL_SERVER_ERROR.getCode(), request.getRequestURI());
-        }
-
-        return buildBody(ex, request.getRequestURI());
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Object handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest request) {
-        log.error(e.getMessage(), e);
-        String message = Optional.ofNullable(e.getBindingResult().getFieldError()).map(FieldError::getDefaultMessage).orElse(e.getMessage());
-        return buildBody(message, null, request.getRequestURI());
-    }
-
     @ExceptionHandler(NotLoginException.class)
-    public ReqResult<Object> notLoginException(NotLoginException ex, HttpServletRequest request, HttpServletResponse response) {
-        String message = null;
+    public ReqResult<?> handleNotLoginException(NotLoginException ex, HttpServletRequest request, HttpServletResponse response) {
+        log.error("未登录，{}", ex.getMessage());
+        String message;
         switch (ex.getType()) {
             case NotLoginException.NOT_TOKEN:
-                message = ErrorCodeEnum.UNAUTHORIZED.getDescription();
+                message = "未提供token";
                 break;
             case NotLoginException.INVALID_TOKEN:
                 message = NotLoginException.INVALID_TOKEN_MESSAGE;
@@ -135,11 +77,11 @@ public class GlobalExceptionHandler {
                 message = NotLoginException.KICK_OUT_MESSAGE;
                 break;
             default:
-                message = NotLoginException.DEFAULT_MESSAGE;
+                message = "当前会话未登录";
         }
         return buildBody(message, ErrorCodeEnum.UNAUTHORIZED.getCode(), request.getRequestURI());
     }
-
+    
     private static ReqResult<Object> buildBody(Exception exception, String uri) {
         log.error(exception.getMessage(), exception);
         String errMessage = StrUtil.blankToDefault(

@@ -3,6 +3,8 @@ package com.sumui.service.impl;
 import cn.dev33.satoken.context.SaHolder;
 import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.stp.StpUtil;
+// 添加 SaSession 的导入
+import cn.dev33.satoken.session.SaSession;
 import cn.hutool.core.util.StrUtil;
 import com.sumui.common.constants.StatusEnum;
 import com.sumui.common.constants.UserStatus;
@@ -42,7 +44,8 @@ public class LoginServiceImpl implements LoginService {
         SysUser loginInfo = this.validLoginInfo(username, password);
         SaHolder.getStorage().set(LOGIN_USER_KEY, loginInfo);
         StpUtil.login(loginInfo.getId());
-        StpUtil.getTokenSession().set(LOGIN_USER_KEY, loginInfo);
+        // 存储用户信息到会话中
+        StpUtil.getTokenSession().set(SaSession.USER, loginInfo);
         return StpUtil.getTokenValue();
     }
 

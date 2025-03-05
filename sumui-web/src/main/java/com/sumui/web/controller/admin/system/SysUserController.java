@@ -8,6 +8,7 @@ import com.sumui.common.model.security.RegisterUserInfo;
 import com.sumui.common.model.system.SysUser;
 import com.sumui.dao.mapper.system.SysUserMapper;
 import com.sumui.service.impl.system.SysUserService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,5 +50,11 @@ public class SysUserController {
 //        logService.getUUID();
         return ReqResult.ok(userMapper.selectList(new LambdaQueryWrapper<>()));
 //        throw new ApiException("测试日志记录请求失败的场景");
+    }
+
+    @ApiOperation("修改用户昵称")
+    @PostMapping("update/nickname")
+    public ReqResult<Boolean> addUser(@RequestBody SysUser user) throws Exception {
+        return ReqResult.ok(userService.updateUserNickName(user));
     }
 }

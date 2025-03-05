@@ -13,25 +13,36 @@
 				</view>
 			</view>
 			<view class="info-item">
+				<text class="item-label">用户名</text>
+				<view class="item-content">
+					<input type="nickname" class="nickname-input" placeholder="请输入用户名" :value="userInfo.userName" @change="onInputUsername" />
+					<uv-icon name="arrow-right"></uv-icon>
+				</view>
+			</view>
+			<view class="info-item">
 				<text class="item-label">昵称</text>
 				<view class="item-content">
-					<input type="nickname" class="nickname-input" placeholder="请输入昵称" :value="userInfo.nickName" @change="onInputNickname" />
+					<input type="username" class="nickname-input" placeholder="请输入昵称" :value="userInfo.nickName" @change="onInputNickname" />
 					<uv-icon name="arrow-right"></uv-icon>
 				</view>
 			</view>
 		</view>
+		<uv-toast ref="toast"></uv-toast>
 	</view>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import config from '@/config'
+import { userApi } from '@/api/user'
 
 const baseURL = config[process.env.NODE_ENV].baseURL
 
 const userInfo = ref({
-  avatarUrl: '',
-  nickName: '今天周末呀'
+  avatarUrl: uni.getStorageSync('userAvatarUrl') || '../../static/wechat.png',
+  userId: uni.getStorageSync('userId'),
+  userName: uni.getStorageSync('userName') || '微信用户',
+  nickName: uni.getStorageSync('userNickName') || '微信用户'
 });
 
 // 选择头像回调
@@ -49,6 +60,10 @@ const onChooseAvatar = (e) => {
 		url: baseURL + '/api/files/upload/avatar', // 替换为你的服务器上传接口
 		filePath: tempFilePath,
 		name: 'file',// 服务器接收文件的字段名
+		header: {
+			'Sa-token': uni.getStorageSync('tokenValue') || '',
+			'Content-Type': 'multipart/form-data', // 文件上传需要设置这个
+		},
 		formData: {
 			'userId': uni.getStorageSync('userId') || '', // 可以添加用户ID等额外信息
 			'type': 'avatar'
@@ -114,13 +129,67 @@ const onChooseAvatar = (e) => {
 	});
 };
 
+const toast = ref(null)
 // 输入昵称回调
-const onInputNickname = (e) => {
-  const nickName = e.detail.value;
-  userInfo.value.nickName = nickName;
-  
-  // 可以在这里将昵称保存到本地或上传到服务器
-  uni.setStorageSync('userNickName', nickName);
+const onInputUsername = async (e) => {
+	const userName = e.detail.value;
+	userInfo.value.userName = userName;
+	uni.showLoading({
+      title: '修改中...',
+      mask: true
+    })
+	
+	try {
+		// 可以在这里将昵称保存到本地或上传到服务器
+		uni.setStorageSync('userName', userName);
+		let res = await userApi.updateAllName({ username: userName, id: userInfo.value.userId });
+		uni.hideLoading()
+		if (res) {
+			toast.value.show({
+				message: '修改成功',
+				type: 'success',
+				duration: 1000
+			})
+		}
+	} catch (error) {
+		console.log('保存失败', error);
+		toast.value.show({
+			message: '修改失败',
+			type: 'error',
+			duration: 1000
+		})
+	}
+};
+
+// 输入用户名回调
+const onInputNickname = async (e) => {
+	const nickName = e.detail.value;
+	userInfo.value.nickName = nickName;
+	uni.showLoading({
+      title: '修改中...',
+      mask: true
+    })
+	
+	try {
+		// 可以在这里将昵称保存到本地或上传到服务器
+		uni.setStorageSync('userNickName', nickName);
+		let res = await userApi.updateAllName({ nickname: nickName, id: userInfo.value.userId });
+		uni.hideLoading()
+		if (res) {
+			toast.value.show({
+				message: '修改成功',
+				type: 'success',
+				duration: 1000
+			})
+		}
+	} catch (error) {
+		console.log('保存失败', error);
+		toast.value.show({
+			message: '修改失败',
+			type: 'error',
+			duration: 1000
+		})
+	}
 };
 
 // 页面加载时获取本地存储的用户信息

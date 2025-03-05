@@ -218,6 +218,9 @@ const doLogin = (param) => {
 			if (code === 200) {
 				// 存储用户信息到本地
 				uni.setStorageSync('userId', result.userId);
+				uni.setStorageSync('userName', result.username);
+				uni.setStorageSync('userNickName', result.nickname);
+				uni.setStorageSync('userAvatarUrl', 'https://minio-s3.071020.xyz/sumui-finance' + result.avatar);
 				uni.setStorageSync('tokenName', "Sa-token");
 				uni.setStorageSync('tokenValue', result.saToken);
 				uni.setStorageSync('userInfo', result);

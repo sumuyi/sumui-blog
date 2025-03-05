@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
  * @Author @Sunl
  * @Date 2023/12/3 13:32
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.sumui"})
 @ComponentScan(basePackages = {"com.sumui.service.convert", "com.sumui"})
 public class SumuiBlogApplication {
     public static void main(String[] args) {

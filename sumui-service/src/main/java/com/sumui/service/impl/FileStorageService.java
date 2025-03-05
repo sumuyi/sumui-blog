@@ -40,8 +40,8 @@ public class FileStorageService {
             throw new Exception("请重新登录！");
         }
         // 设置存储路径和文件名
-        String filePath = "/avatar/" + userId + "/" + DateUtil.format(LocalDateTime.now(), "yyyyMMddHHmmss");
-        String fileName = file.getOriginalFilename();
+        String filePath = "/avatar/" + userId;
+        String fileName = DateUtil.format(LocalDateTime.now(), "yyyyMMddHHmmss");
         // 上传头像
         String fileUrl = uploadFile(file, filePath, fileName);
         if (StrUtil.isNotBlank(fileUrl) && fileUrl.startsWith(frpEndpoint)) {

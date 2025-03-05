@@ -1,49 +1,16 @@
 <template>
 	<view class="mine-container">
 		<!-- 顶部用户信息 -->
-		<view class="user-info flex-between">
-			<image class="avatar" src="../../static/wechat.png" mode="aspectFill" @tap="goToEditInfo"></image>
+		<view class="user-info flex">
+			<image class="avatar" :src="userInfo.avatarUrl || '../../static/wechat.png'" mode="aspectFill" @tap="goToEditInfo"></image>
 			<view>
-				<view class="username" @tap="goToEditInfo">太阳是我吗</view>
+				<view class="username" @tap="goToEditInfo">{{ userInfo.userName || '微信用户' }}</view>
 				<view class="user-description">请写个人信息更容易被别人关注哦~</view>
 			</view>
 		</view>
 
 		<!-- 功能列表 -->
 		<view class="function-list">
-			<view class="function-item">
-				<text class="iconfont icon-fabiao"></text>
-				<text>我的发布</text>
-				<text class="iconfont icon-arrow-right"></text>
-			</view>
-			<view class="function-item">
-				<text class="iconfont icon-huida"></text>
-				<text>我的回答</text>
-				<text class="iconfont icon-arrow-right"></text>
-			</view>
-			<view class="function-item">
-				<text class="iconfont icon-huati"></text>
-				<text>我的话题</text>
-				<text class="iconfont icon-arrow-right"></text>
-			</view>
-			<view class="function-item">
-				<text class="iconfont icon-jifen"></text>
-				<text>积分</text>
-				<text>2014</text>
-				<text class="iconfont icon-arrow-right"></text>
-			</view>
-			<view class="function-item">
-				<text class="iconfont icon-tongzhi"></text>
-				<text>通知</text>
-				<text class="notification-count">40</text>
-				<text class="iconfont icon-arrow-right"></text>
-			</view>
-			<view class="function-item">
-				<text class="iconfont icon-shoucang"></text>
-				<text>我的收藏</text>
-				<text>50</text>
-				<text class="iconfont icon-arrow-right"></text>
-			</view>
 			<view class="function-item">
 				<text class="iconfont icon-shezhi"></text>
 				<text>设置</text>
@@ -59,6 +26,14 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
+const userInfo = ref({
+  avatarUrl: uni.getStorageSync('userAvatarUrl') || '../../static/wechat.png',
+  userId: uni.getStorageSync('userId'),
+  userName: uni.getStorageSync('userName') || '微信用户',
+  nickName: uni.getStorageSync('userNickName') || '微信用户'
+});
+
 const goToEditInfo = () => {
 	uni.navigateTo({
 		url: '/pages/mine/edit'

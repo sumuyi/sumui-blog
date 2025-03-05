@@ -55,7 +55,13 @@
             "urlCheck" : false,
             "minified" : true
         },
-        "usingComponents" : true
+        "usingComponents" : true,
+        "requiredPrivateInfos" : [ "getLocation" ],
+        "permission" : {
+            "scope.userLocation" : {
+                "desc" : "你的位置信息将用于获取天气数据"
+            }
+        }
     },
     "mp-alipay" : {
         "usingComponents" : true

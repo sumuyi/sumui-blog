@@ -38,4 +38,6 @@ public interface SysUserService extends IService<SysUser> {
      * @param fileName  文件名
      */
     void updateUserAvatar(String userId, String filePath, String fileName);
+
+    Boolean updateUserNickName(SysUser user);
 }
