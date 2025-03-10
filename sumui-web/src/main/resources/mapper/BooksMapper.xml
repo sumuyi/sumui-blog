@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sumui.dao.mapper.mapper.BooksMapper">
+<mapper namespace="com.sumui.dao.mapper.finance.BooksMapper">
 
     <resultMap id="BaseResultMap" type="com.sumui.common.model.finance.Books">
             <id property="id" column="id" />
@@ -19,4 +19,14 @@
         id,name,type,description,cover_image,status,
         created_at,updated_at
     </sql>
+    <select id="getUserBooks" resultType="com.sumui.common.model.finance.Books">
+        SELECT ab.*
+        FROM books ab
+        LEFT JOIN book_family_users bm ON ab.id = bm.book_id AND bm.user_id = #{userId} AND bm.status = 0
+        WHERE (ab.user_id = #{userId} OR bm.id IS NOT NULL) AND ab.status = 0
+        ORDER BY ab.created_at DESC
+    </select>
+    <select id="getBookMemberCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM books WHERE id = #{bookId} AND status = 0
+    </select>
 </mapper>

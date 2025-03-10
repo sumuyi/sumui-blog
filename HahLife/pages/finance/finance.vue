@@ -2,10 +2,15 @@
 	<view class="page-container">
 		<!-- 头部 -->
     <view class="flex-between">
-      <view class="current-book-name flex-between" @click="showPopupBookList">
+      <!-- <view class="current-book-name flex-between" @click="showPopupBookList">
         {{ currentBookName }}
         <uv-icon name="arrow-down-fill" color="black"></uv-icon>
-      </view>
+      </view> -->
+      <book-selector 
+        v-model="currentBook"
+        :books="bookListAll"
+        @change="handleBookChange"
+      ></book-selector>
       <view class="current-month-str flex-between" @click="showPopupDate">
         {{ currentMonthStr }}
         <uv-icon name="arrow-down-fill" color="black"></uv-icon>
@@ -159,6 +164,45 @@ import { onShow, onPullDownRefresh } from '@dcloudio/uni-app'  // 添加 onLoad 
 import { billApi } from '@/api/bills'
 import { bookApi } from '@/api/books'
 import { timeFormat } from '@/uni_modules/uv-ui-tools/libs/function/index.js';
+import BookSelector from '@/components/BookSelector/index.vue';
+
+
+// 当前选中的账本
+const currentBook = ref({});
+
+// 模拟的账本列表数据
+const bookListAll = ref([
+  {
+    id: '1',
+    name: '日常开销',
+    description: '记录日常生活开销',
+    createTime: '2023-01-01'
+  },
+  {
+    id: '2',
+    name: '旅行账本',
+    description: '记录旅行期间的花费',
+    createTime: '2023-02-15'
+  },
+  {
+    id: '3',
+    name: '家庭账本',
+    description: '记录家庭共同开销',
+    createTime: '2023-03-20'
+  },
+  {
+    id: '4',
+    name: '项目支出',
+    description: '记录工作项目相关支出',
+    createTime: '2023-04-10'
+  }
+]);
+
+// 处理账本变更
+const handleBookChange = (book) => {
+  console.log('选择了账本:', book);
+  // 这里可以添加其他逻辑，如获取账本详情等
+};
 
 const setColor = type => {
 	if(type == 1){

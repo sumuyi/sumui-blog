@@ -1,16 +1,16 @@
 package com.sumui.web.controller.finance;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.stp.StpUtil;
 import com.sumui.common.constants.StatusEnum;
 import com.sumui.common.model.ReqResult;
+import com.sumui.common.model.dto.BooksDTO;
 import com.sumui.common.model.finance.Books;
 import com.sumui.service.BooksService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,5 +29,15 @@ public class BooksController {
         } catch (Exception e) {
             return ReqResult.fail(StatusEnum.BILL_SAVE_ERROR);
         }
+    }
+
+    /**
+     * 创建账本
+     */
+    @PostMapping("/create")
+    @SaCheckLogin
+    public ReqResult<String> createBook(@RequestBody BooksDTO bookDTO) {
+        String bookId = booksService.createBook(bookDTO);
+        return ReqResult.ok(bookId);
     }
 }

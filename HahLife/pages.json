@@ -7,7 +7,7 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "首页"
 			}
 		},
 		{
@@ -45,6 +45,13 @@
 			{
 				"navigationBarTitleText" : "修改个人信息"
 			}
+		},
+		{
+			"path" : "pages/book/book",
+			"style" : 
+			{
+				"navigationBarTitleText" : "账本管理"
+			}
 		}
 	],
 	"globalStyle": {
@@ -78,5 +85,8 @@
 			}
 		]
 	},
-	"uniIdRouter": {}
+	"uniIdRouter": {},
+	"usingComponents": {
+		"book-selector": "/components/BookSelector/index"
+	}
 }

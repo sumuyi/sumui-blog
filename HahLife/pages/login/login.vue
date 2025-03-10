@@ -123,8 +123,9 @@
 
 <script setup>
 import { ref, nextTick } from 'vue'
-import { useUserStore } from '@/store/index.js'
+import { useUserStore } from '@/store'
 import config from '@/config'
+import { bookApi } from '@/api/books'
 
 const baseURL = config[process.env.NODE_ENV].baseURL
 const userStore = useUserStore()
@@ -233,6 +234,9 @@ const doLogin = (param) => {
 				if (result.familyUsersList) {
 					userStore.setFamilyList(result.familyUsersList);
 				}
+
+				// 如果有账本列表，直接设置
+				getBookList();
 				uni.hideLoading()
 
 				uni.switchTab({
@@ -255,6 +259,21 @@ const doLogin = (param) => {
 			})
 		}
 	})
+}
+
+const getBookList = async () => {
+  try {
+    let response = await bookApi.getList()
+    console.log('userBooks', response)
+    if (response && response.length > 0) {
+		userStore.setBookList(response)
+		userStore.setCurrentBook(response[0])
+    } else {
+		userStore.setCurrentBook(null)
+    }
+  } catch (error) {
+    console.error('获取账本列表失败', error)
+  }
 }
 </script>
 

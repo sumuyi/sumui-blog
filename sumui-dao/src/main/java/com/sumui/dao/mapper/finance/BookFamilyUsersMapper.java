@@ -16,6 +16,8 @@ import java.util.List;
 public interface BookFamilyUsersMapper extends BaseMapper<BookFamilyUsers> {
 
     List<BookFamilyUsersDTO> selectFamilyUsersByBookId(@Param("bookId") Long bookId);
+
+    Integer checkUserBookPermission(String bookId, String userId, String permission);
 }
 
 

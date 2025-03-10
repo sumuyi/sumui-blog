@@ -200,3 +200,49 @@ CREATE TABLE book_family_users (
     create_by varchar(20) DEFAULT NULL COMMENT '创建人',
     PRIMARY KEY (book_id, user_id) USING BTREE
 ) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT '家庭账本关联人员';
+
+CREATE TABLE `books` (
+  `id` varchar(20) NOT NULL,
+  `user_id` varchar(20) NOT NULL COMMENT '用户id',
+  `name` varchar(50) NOT NULL,
+  `type` varchar(20) DEFAULT NULL COMMENT '账本类型：personal个人，family家庭，travel旅行，etc其他',
+  `description` text,
+  `cover_image` varchar(255) DEFAULT NULL,
+  `status` tinyint NOT NULL DEFAULT '1' COMMENT '账本状态：1-正常，0-已删除',
+  `created_by` varchar(255) NOT NULL COMMENT '创建者',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_by` varchar(255) NOT NULL COMMENT '更新者',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `del_flag` bit(1) NOT NULL DEFAULT b'0' COMMENT '删除状态：0-未删除，1-已删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='账本表';
+
+CREATE TABLE `bills` (
+  `id` varchar(20) NOT NULL,
+  `book_id` varchar(20) NOT NULL,
+  `category_id` varchar(20) NOT NULL,
+  `user_id` varchar(20) DEFAULT NULL COMMENT '关联的用户',
+  `amount` decimal(12,2) NOT NULL COMMENT '金额',
+  `type` tinyint NOT NULL COMMENT '类型：1-支出，2-收入',
+  `payment_method` varchar(50) NOT NULL COMMENT '支付方式',
+  `bill_date` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '账单日期',
+  `remark` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '账单备注',
+  `location` varchar(255) DEFAULT NULL COMMENT '消费地点',
+  `images` text COMMENT '票据图片，JSON数组存储多个图片URL',
+  `created_by` bigint unsigned NOT NULL COMMENT '创建人ID',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_book_date` (`book_id`,`bill_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='账单表';
+
+ALTER TABLE `books`
+    ADD COLUMN `budget_amount` decimal(10,2) DEFAULT NULL COMMENT '预算金额',
+    ADD COLUMN `icon` varchar(255) DEFAULT NULL COMMENT '账本图标',
+    MODIFY COLUMN `status` tinyint(1) DEFAULT '0' COMMENT '状态：0正常，1停用，2归档'
+;
+ALTER TABLE `book_family_users`
+    ADD COLUMN `permission` varchar(10) NOT NULL DEFAULT 'read' COMMENT '权限：read只读，write读写',
+    ADD COLUMN `nickname` varchar(50) DEFAULT NULL COMMENT '在账本中的昵称',
+    ADD COLUMN `status` tinyint(1) DEFAULT '0' COMMENT '状态：0正常，1已移除'
+;

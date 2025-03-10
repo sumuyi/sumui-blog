@@ -12,6 +12,9 @@ logging:
   level:
     com.sumui: debug
     org.springframework: warn
+    org.springframework.boot: info  # 添加这一行，确保Spring Boot的启动信息能够显示
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
 
 
 # 项目配置
@@ -38,41 +41,19 @@ user:
     # 密码锁定时间（默认10分钟）
     lockTime: 10
 
-
-# 默认的数据库名
-database:
-  name: sumui_demo
-  ip: 121.37.202.66
-  port: 5206
-
 spring:
-  servlet:
-    multipart:
-      max-file-size: 50MB
-      max-request-size: 50MB
+  profiles:
+    # 将 @profiles.active@ 改为以下格式之一
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   application:
     name: sumui-blog
-  datasource: #单数据源
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    type: com.alibaba.druid.pool.DruidDataSource
-    url: jdbc:mysql://${database.ip}:${database.port}/${database.name}?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
-    username: root
-    password: mysql_0720
+  main:
+    banner-mode: console
+    log-startup-info: true  # 添加这一行，确保启动信息被记录
+  banner:
+    charset: UTF-8
+    location: classpath:banner.txt
 
-    #DruidDataSource自有属性
-    filters: stat
-    initialSize: 0
-    minIdle: 1
-    maxActive: 200
-    maxWait: 10000
-    time-between-eviction-runs-millis: 60000
-    min-evictable-idle-time-millis: 200000
-    testWhileIdle: true
-    testOnBorrow: true
-    validationQuery: select 1
-
---- # redis 单机配置(单机与集群只能开启一个另一个需要注释掉)
-spring:
   # redis配置
   redis:
     # Redis数据库索引（默认为0）
@@ -172,12 +153,3 @@ wechat:
   secret: 75c264273f9f715fbbe16f8d2b725edf
   url: https://api.weixin.qq.com/sns/jscode2session?grant_type=authorization_code
   access_token_url: https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential
-
-minio:
-  endpoint: http://192.168.5.54:9000
-  frp-endpoint: https://minio-s3.071020.xyz/
-  access-key: Vriz2iDOgGGXPO4ALTJ1
-  secret-key: bB3NX3niDobuSgXftEUYJYvtAv7yJUArQKJVOuH7
-  bucket: sumui-finance
-  secure: true
-  region: us-east-1

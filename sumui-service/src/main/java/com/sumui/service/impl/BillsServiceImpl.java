@@ -35,12 +35,14 @@ import java.util.stream.Collectors;
 */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class BillsServiceImpl extends ServiceImpl<BillsMapper, Bills> implements BillsService{
 
-    private final BillConverter billConverter;
-    private final SysUserService sysUserService;
-    private final BookFamilyUsersService bookFamilyUsersService;
+    @Resource
+    private BillConverter billConverter;
+    @Resource
+    private SysUserService sysUserService;
+    @Resource
+    private BookFamilyUsersService bookFamilyUsersService;
 
     /**
      * 添加账单

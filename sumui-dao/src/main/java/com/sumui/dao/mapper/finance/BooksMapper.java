@@ -2,6 +2,9 @@ package com.sumui.dao.mapper.finance;
 
 import com.sumui.common.model.finance.Books;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author flk-sunl
@@ -10,7 +13,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.sumui.common.model.finance.Books
 */
 public interface BooksMapper extends BaseMapper<Books> {
+    List<Books> getUserBooks(@Param("userId") String userId);
 
+    Integer getBookMemberCount(@Param("bookId") String bookId);
 }
 
 

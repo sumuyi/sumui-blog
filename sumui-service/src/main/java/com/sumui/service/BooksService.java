@@ -1,5 +1,7 @@
 package com.sumui.service;
 
+import com.sumui.common.model.dto.BookMemberDTO;
+import com.sumui.common.model.dto.BooksDTO;
 import com.sumui.common.model.finance.Books;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -15,4 +17,11 @@ public interface BooksService extends IService<Books> {
     void addUserToBook(String userId);
 
     List<Books> getBooksByUserId(String userId);
+
+    /**
+     * 创建账本
+     */
+    String createBook(BooksDTO bookDTO);
+
+    Boolean setDefaultBook(String bookId, String userId);
 }

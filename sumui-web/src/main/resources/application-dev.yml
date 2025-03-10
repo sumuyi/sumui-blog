@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://121.37.202.66:5206/sumui_blog?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: mysql_0720
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      filters: stat,wall
+# 存储文件服务配置
+minio:
+  endpoint: http://192.168.150.101:9000
+  frp-endpoint: https://flk-minio.071020.xyz
+  access-key: z5BRfeIBevU9TGWBEKjc
+  secret-key: Foqs9Q1oPdJjord95eWdRQDAgHxAIToLscRIdLKZ
+  bucket: sumui-finance
+  secure: true
+  region: us-east-1

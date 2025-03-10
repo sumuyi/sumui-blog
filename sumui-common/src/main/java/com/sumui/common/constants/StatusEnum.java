@@ -87,7 +87,23 @@ public enum StatusEnum {
     BILL_CATEGORY_EMPTY(3002, "账单类别不能为空"),
     BILL_TYPE_INVALID(3003, "账单类型无效"),
     BILL_NOT_FOUND(3004, "账单记录不存在"),
-    BILL_SAVE_ERROR(3005, "保存账单失败")
+    BILL_SAVE_ERROR(3005, "保存账单失败"),
+
+    // 账本成员相关错误码 (4000-4999)
+    BOOKS_MEMBERS_UNAUTHORIZED(4000, "您没有权限添加账本成员"),
+    BOOKS_MEMBERS_NOT_FOUND(4001, "该用户不在该账本中"),
+    BOOKS_MEMBERS_EXISTS(4002, "该用户已在该账本中"),
+    BOOKS_MEMBERS_NOT_AUTHORIZED(4003, "您没有权限访问该用户"),
+
+    // 账本相关错误码 (5000-5999)
+    BOOKS_NOT_FOUND(5000, "账本不存在"),
+    BOOKS_CREATE_FAILED(5001, "创建账本失败"),
+    BOOKS_UPDATE_FAILED(5002, "更新账本失败"),
+    BOOKS_DELETE_FAILED(5003, "删除账本失败"),
+    BOOKS_NOT_OWNER(5004, "您不是该账本的所有者"),
+    BOOKS_NOT_MEMBER(5005, "您不是该账本的成员"),
+    BOOKS_NOT_AUTHORIZED(5006, "您没有权限访问该账本"),
+    BOOKS_NOT_ENOUGH_MONEY(5007, "余额不足"),
     ;
 
     private final Integer code;

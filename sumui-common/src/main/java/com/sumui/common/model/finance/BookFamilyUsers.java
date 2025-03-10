@@ -31,6 +31,26 @@ public class BookFamilyUsers implements Serializable {
     private String userId;
 
     /**
+     * 权限：read只读，write读写
+     */
+    private String permission;
+
+    /**
+     * 用户昵称
+     */
+    private String nickname;
+
+    /**
+     * 用户信息
+     */
+    @TableField(exist = false)
+    private String userName;
+
+    @TableField(exist = false)
+    private String avatar;
+
+
+    /**
      * 创建人
      */
     private String createBy;

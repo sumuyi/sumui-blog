@@ -20,4 +20,9 @@
         inner join sys_user user on user.id = family.user_id
         where family.book_id = #{bookId}
     </select>
+    <select id="checkUserBookPermission" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM book_family_users
+        WHERE book_id = #{bookId} AND user_id = #{userId} AND permission = #{permission} AND status = 0
+    </select>
 </mapper>

@@ -15,4 +15,8 @@ public interface BookFamilyUsersService extends IService<BookFamilyUsers> {
     List<String> getBookFamilyUserIds(Long bookId);
 
     List<BookFamilyUsersDTO> getBookFamilyUsersByBookId(Long familyBookId);
+
+    Boolean addMembers(String bookId, List<String> memberIds, String permission);
+
+    Boolean checkUserBookPermission(String bookId, String userId, String permission);
 }

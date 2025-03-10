@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import lombok.Data;
 
@@ -29,9 +30,14 @@ public class Books implements Serializable {
     private String name;
 
     /**
-     * 账本类型：daily-日常，travel-旅行等
+     * 账本类型：personal个人，family家庭，travel旅行，etc其他
      */
     private String type;
+
+    /**
+     * 账本预算金额
+     */
+    private BigDecimal budgetAmount;
 
     /**
      *
@@ -39,14 +45,25 @@ public class Books implements Serializable {
     private String description;
 
     /**
-     *
+     * 账本封面图片
      */
     private String coverImage;
 
     /**
-     * 账本状态：1-正常，0-已删除
+     * 账本图标
+     */
+    private String icon;
+
+    /**
+     * 状态：0正常，1停用，2归档
      */
     private Integer status;
+
+    /**
+     * 是否为当前选中账本
+     */
+    @TableField(exist = false)
+    private Boolean isSelected;
 
     /**
      *

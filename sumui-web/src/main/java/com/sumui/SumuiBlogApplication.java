@@ -1,8 +1,8 @@
 package com.sumui;
 
-import cn.dev33.satoken.SaManager;
-import org.springframework.boot.SpringApplication;
+import org.springframework.boot.Banner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
@@ -14,11 +14,9 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = {"com.sumui.service.convert", "com.sumui"})
 public class SumuiBlogApplication {
     public static void main(String[] args) {
-        SpringApplication.run(SumuiBlogApplication.class, args);
-        System.out.println("===============================");
-        System.out.println("服务启动成功");
-        System.out.println("===============================");
-
-        System.out.println("启动成功，Sa-Token 配置如下：" + SaManager.getConfig());
+        // 使用SpringApplicationBuilder设置banner模式
+        new SpringApplicationBuilder(SumuiBlogApplication.class)
+                .bannerMode(Banner.Mode.CONSOLE)
+                .run(args);
     }
 }
