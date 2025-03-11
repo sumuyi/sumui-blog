@@ -1,5 +1,6 @@
 package com.sumui.dao.mapper.finance;
 
+import com.sumui.common.model.dto.BooksDTO;
 import com.sumui.common.model.finance.Books;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
@@ -16,6 +17,8 @@ public interface BooksMapper extends BaseMapper<Books> {
     List<Books> getUserBooks(@Param("userId") String userId);
 
     Integer getBookMemberCount(@Param("bookId") String bookId);
+
+    List<BooksDTO> selectBooksDTOByUserId(@Param("userId") String userId, @Param("familyBookId") Long familyBookId);
 }
 
 

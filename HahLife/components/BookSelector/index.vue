@@ -7,7 +7,7 @@
 		</view>
 
 		<!-- 弹出层部分 -->
-		<uv-popup ref="pickerBookRef" :close-on-click-overlay="false" mode="bottom" round="16">
+		<uv-popup ref="pickerBookRef" mode="bottom" round="16">
 			<view class="popup-content">
 				<view class="popup-header">
 					<text class="popup-title">选择账本</text>
@@ -22,15 +22,15 @@
 				<view class="book-grid">
 					<view v-for="(book) in bookList" :key="book.id" class="book-card"
 						:class="{ 'active': currentBook.id === book.id }" @click="selectBook(book)">
-						<image class="book-image" src="../../static/components/image.png" mode="aspectFill"></image>
+						<image class="book-image" :src="book.coverImage || '../../static/components/image.png'" mode="aspectFill"></image>
 						<text class="book-card-name">{{ book.name }}</text>
 					</view>
 				</view>
 
 				<!-- 底部按钮 -->
-				<view class="bottom-button">
+				<!-- <view class="bottom-button">
 					<button class="view-all-btn" @click="viewAllBooks">查看所有账本汇总数据</button>
-				</view>
+				</view> -->
 			</view>
 		</uv-popup>
 	</view>
@@ -38,6 +38,10 @@
 
 <script setup>
 import { ref, defineProps, defineEmits, nextTick, onMounted } from 'vue';
+import { useUserStore } from '@/store';
+  
+  // 使用 Pinia store
+  const bookStore = useUserStore();
 
 const props = defineProps({
 	// 当前选中的账本
@@ -57,7 +61,7 @@ const emit = defineEmits(['update:value', 'change']);
 // 当前选中的账本
 const currentBook = ref(props.value || {});
 // 账本列表
-const bookList = ref(props.books || []);
+const bookList = ref([]);
 // 是否显示账本列表弹窗
 const showBookList = ref(false);
 
@@ -128,7 +132,10 @@ const manageBooks = () => {
 
 // 初始化时也处理一次
 onMounted(() => {
-	//   randomUrl.value = randomImage();
+	console.log('onmounted-------');
+	
+	currentBook.value = bookStore.currentBook
+	bookList.value = bookStore.bookList
 });
 </script>
 
@@ -170,7 +177,6 @@ onMounted(() => {
 	.book-grid {
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: space-between;
 		padding: 10rpx 0;
 
 		.book-card {

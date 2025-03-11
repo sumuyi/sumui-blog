@@ -3,6 +3,7 @@ package com.sumui.service.impl;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -18,10 +19,13 @@ import com.sumui.service.BookFamilyUsersService;
 import com.sumui.service.BooksService;
 import com.sumui.service.convert.BooksConvert;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 * @description 针对表【books(账本表)】的数据库操作Service实现
 * @createDate 2025-02-21 10:21:17
 */
+@Slf4j
 @Service
 public class BooksServiceImpl extends ServiceImpl<BooksMapper, Books> implements BooksService{
 
@@ -39,6 +44,8 @@ public class BooksServiceImpl extends ServiceImpl<BooksMapper, Books> implements
     private BooksConvert booksConvert;
     @Resource
     private BookFamilyUsersService bookFamilyUsersService;
+    @Resource
+    private FileStorageService fileStorageService;
 
     /**
      * 关联用户到默认账本
@@ -65,19 +72,23 @@ public class BooksServiceImpl extends ServiceImpl<BooksMapper, Books> implements
      * @return 账本列表
      */
     @Override
-    public List<Books> getBooksByUserId(String userId) {
+    public List<BooksDTO> getBooksByUserId(String userId) {
         if (StrUtil.isBlank(userId)) {
 //            throw new BizException(StatusEnum.ILLEGAL_ARGUMENTS);
             return ListUtil.empty();
         }
         SysUser user = (SysUser) StpUtil.getSession().get(SaSession.USER);
-        return this.lambdaQuery().eq(Books::getUserId, userId)
-                .or(user != null && user.getFamilyBookId() != null,
-                        wq -> {
-                            assert user != null;
-                            wq.eq(Books::getId, user.getFamilyBookId());
-                        }
-                ).list();
+        List<BooksDTO> booksDTOList = this.baseMapper.selectBooksDTOByUserId(userId, user.getFamilyBookId());
+        if (booksDTOList == null || booksDTOList.isEmpty()) {
+            return ListUtil.empty();
+        }
+        booksDTOList.forEach(booksDTO -> {
+            // 如果设置了预算，计算余额
+            if (booksDTO.getBudgetAmount() != null) {
+                booksDTO.setBalanceAmount(booksDTO.getBudgetAmount().subtract(booksDTO.getTotalExpense()));
+            }
+        });
+        return booksDTOList;
     }
 
     /**
@@ -88,13 +99,14 @@ public class BooksServiceImpl extends ServiceImpl<BooksMapper, Books> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String createBook(BooksDTO bookDTO) {
+        log.error("bookDto:{}", bookDTO);
         if (StrUtil.isBlank(bookDTO.getName())) {
             throw new BizException(StatusEnum.ILLEGAL_ARGUMENTS.getCode(), "账本名称不能为空");
         }
 
         String userId = StpUtil.getLoginIdAsString();
         Books book = booksConvert.toBooks(bookDTO);
-        book.setId(IdUtil.fastSimpleUUID());
+        book.setId(StrUtil.isBlank(bookDTO.getId()) ? IdUtil.getSnowflakeNextIdStr() : bookDTO.getId());
         book.setUserId(userId);
         book.setStatus(0);
         book.setCreatedAt(new Date());
@@ -102,7 +114,19 @@ public class BooksServiceImpl extends ServiceImpl<BooksMapper, Books> implements
         book.setCreatedBy(userId);
         book.setUpdatedBy(userId);
 
-        this.save(book);
+        // 处理封面图片
+        if (book.getCoverImage().startsWith("http") || book.getCoverImage().startsWith("https")) {
+            String objectName = "book/coverImage/" + book.getId() + "/"
+                + DateUtil.format(LocalDateTime.now(), "yyyyMMddHHmmss")
+                + ".png";
+            fileStorageService.uploadFileByUrl(book.getCoverImage(), objectName);
+            book.setCoverImage("/" + objectName);
+        }
+        if (StrUtil.isBlank(bookDTO.getId())) {
+            this.save(book);
+        } else {
+            this.updateById(book);
+        }
 
         // 如果有成员，添加成员
         if (bookDTO.getMemberIds() != null && bookDTO.getMemberIds().length > 0) {
@@ -118,7 +142,9 @@ public class BooksServiceImpl extends ServiceImpl<BooksMapper, Books> implements
         }
 
         // 设置为当前账本
-        setDefaultBook(book.getId(), userId);
+//        if (bookDTO.getIsDefault()) {
+//            setDefaultBook(book.getId(), userId);
+//        }
 
         return book.getId();
     }

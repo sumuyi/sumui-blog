@@ -6,6 +6,7 @@ import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
 import com.sumui.service.impl.system.SysUserService;
 import io.minio.*;
+import io.minio.errors.*;
 import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,8 +16,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -95,5 +101,31 @@ public class FileStorageService {
                 .expiry(7, TimeUnit.DAYS)
                 .build()
         );
+    }
+
+    /**
+     * 从远程 URL 下载图片并上传到 MinIO
+     * @param coverImage 远程图片 URL
+     * @param objectName 存储对象名称（如 "images/photo.jpg"）
+     */
+    public String uploadFileByUrl(String coverImage, String objectName) {
+        // 2. 从远程 URL 获取输入流
+        try (InputStream inputStream = new URL(coverImage).openStream()) {
+            // 1. 确保存储桶存在
+            if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())) {
+                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+            }
+            // 3. 上传到 MinIO
+            minioClient.putObject(
+                PutObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(objectName)
+                    .stream(inputStream, inputStream.available(), -1)
+                    .build()
+            );
+            return getSimpleFileUrl(bucketName + "/" + objectName);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

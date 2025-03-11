@@ -52,6 +52,13 @@
 			{
 				"navigationBarTitleText" : "账本管理"
 			}
+		},
+		{
+			"path" : "pages/book/add-edit",
+			"style" : 
+			{
+				"navigationBarTitleText" : "账本信息"
+			}
 		}
 	],
 	"globalStyle": {

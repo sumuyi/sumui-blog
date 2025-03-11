@@ -1,5 +1,6 @@
 package com.sumui.common.model.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -23,9 +24,29 @@ public class BooksDTO {
     private String type;
 
     /**
+     * 账本描述
+     */
+    private String description;
+
+    /**
      * 预算金额
      */
     private BigDecimal budgetAmount;
+
+    /**
+     * 预算金额
+     */
+    private BigDecimal totalIncome;
+
+    /**
+     * 预算金额
+     */
+    private BigDecimal totalExpense;
+
+    /**
+     * 结余金额
+     */
+    private BigDecimal balanceAmount;
 
     /**
      * 账本图标
@@ -36,6 +57,16 @@ public class BooksDTO {
      * 账本封面
      */
     private String coverImage;
+
+    /**
+     * 账单数量
+     */
+    private Integer billCount;
+
+    /**
+     * 是否为当前选中账本
+     */
+    private Boolean isDefault;
 
     /**
      * 成员列表

@@ -84,6 +84,21 @@ export const useUserStore = defineStore('user', {
 				this.currentBook = this.bookList.length > 0 ? this.bookList[0] : null
 			}
 		}
+	},
+	// 添加持久化配置
+	persist: {
+		key: 'hahlife-user-store',
+		storage: {
+			// 在 uniapp 中使用 uni 的存储 API
+			getItem: (key) => {
+				return uni.getStorageSync(key)
+			},
+			setItem: (key, value) => {
+				uni.setStorageSync(key, value)
+			}
+		},
+		// 指定需要持久化的状态
+		paths: ['userId', 'userInfo', 'familyList', 'bookList', 'currentBook']
 	}
 })
 

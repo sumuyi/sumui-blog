@@ -29,4 +29,20 @@
     <select id="getBookMemberCount" resultType="java.lang.Integer">
         SELECT COUNT(1) FROM books WHERE id = #{bookId} AND status = 0
     </select>
+    <select id="selectBooksDTOByUserId" resultType="com.sumui.common.model.dto.BooksDTO">
+        select books.id,
+               books.name,
+               books.type,
+               books.cover_image,
+               books.description,
+               books.status,
+               books.budget_amount,
+               count(bills.id)                          as billCount,
+               sum(IF(bills.type = 2, bills.amount, 0)) as total_income,
+               sum(IF(bills.type = 1, bills.amount, 0)) as total_expense
+        from books
+                 left join bills on bills.book_id = books.id
+        where books.user_id = #{userId} or books.id = #{familyBookId}
+        group by books.id
+    </select>
 </mapper>

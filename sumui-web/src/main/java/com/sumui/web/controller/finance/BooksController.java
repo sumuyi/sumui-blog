@@ -23,7 +23,7 @@ public class BooksController {
 
     @ApiOperation("获取用户账本列表")
     @GetMapping("/user/list")
-    public ReqResult<List<Books>> getUserBooksList() {
+    public ReqResult<List<BooksDTO>> getUserBooksList() {
         try {
             return ReqResult.ok(booksService.getBooksByUserId(StpUtil.getLoginIdAsString()));
         } catch (Exception e) {

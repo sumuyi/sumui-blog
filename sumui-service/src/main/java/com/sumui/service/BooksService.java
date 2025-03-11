@@ -16,7 +16,7 @@ public interface BooksService extends IService<Books> {
 
     void addUserToBook(String userId);
 
-    List<Books> getBooksByUserId(String userId);
+    List<BooksDTO> getBooksByUserId(String userId);
 
     /**
      * 创建账本
