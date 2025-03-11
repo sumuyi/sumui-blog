@@ -1,11 +1,13 @@
 const config = {
   // 开发环境
   development: {
-    baseURL: 'http://localhost:9090'  // 本地开发环境地址
+    baseURL: 'http://localhost:9090',
+    minioURL: 'https://minio-s3.071020.xyz/sumui-finance'
   },
   // 生产环境
   production: {
-    baseURL: 'https://back.071020.xyz'  // 实际生产环境地址
+    baseURL: 'https://back.071020.xyz',
+    minioURL: 'https://minio-s3.071020.xyz/sumui-finance'
   }
 }
 

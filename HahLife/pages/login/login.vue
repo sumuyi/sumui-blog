@@ -128,6 +128,7 @@ import config from '@/config'
 import { bookApi } from '@/api/books'
 
 const baseURL = config[process.env.NODE_ENV].baseURL
+const minioURL = config[process.env.NODE_ENV].minioURL
 const userStore = useUserStore()
 
 // 协议相关状态
@@ -214,14 +215,14 @@ const doLogin = (param) => {
 		url: baseURL + '/auth/api/wx-login',
 		method: 'POST',
 		data: param,
-		success: (res) => {
+		success: async (res) => {
 			let { code, result } = res.data;
 			if (code === 200) {
 				// 存储用户信息到本地
 				uni.setStorageSync('userId', result.userId);
 				uni.setStorageSync('userName', result.username);
 				uni.setStorageSync('userNickName', result.nickname);
-				uni.setStorageSync('userAvatarUrl', 'https://minio-s3.071020.xyz/sumui-finance' + result.avatar);
+				uni.setStorageSync('userAvatarUrl', minioURL + result.avatar);
 				uni.setStorageSync('tokenName', "Sa-token");
 				uni.setStorageSync('tokenValue', result.saToken);
 				uni.setStorageSync('userInfo', result);
@@ -236,7 +237,7 @@ const doLogin = (param) => {
 				}
 
 				// 如果有账本列表，直接设置
-				getBookList();
+				await getUserBookList();
 				uni.hideLoading()
 
 				uni.switchTab({
@@ -261,15 +262,17 @@ const doLogin = (param) => {
 	})
 }
 
-const getBookList = async () => {
+const getUserBookList = async () => {
   try {
     let response = await bookApi.getList()
-    console.log('userBooks', response)
+    console.log('getUserBookList', response)
     if (response && response.length > 0) {
+		response.forEach(element => {
+			if (element.coverImage) {
+				element.coverImage = minioURL + element.coverImage;
+			}
+		});
 		userStore.setBookList(response)
-		userStore.setCurrentBook(response[0])
-    } else {
-		userStore.setCurrentBook(null)
     }
   } catch (error) {
     console.error('获取账本列表失败', error)

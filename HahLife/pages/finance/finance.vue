@@ -402,10 +402,6 @@ onShow(() => {
 	})
 })
 
-onMounted(() => {
-  getBookList()
-})
-
 const popupBillDetailRef = ref(null)
 const currentBill = ref(null)
 

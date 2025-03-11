@@ -22,7 +22,7 @@
 				<view class="book-grid">
 					<view v-for="(book) in bookList" :key="book.id" class="book-card"
 						:class="{ 'active': currentBook.id === book.id }" @click="selectBook(book)">
-						<image class="book-image" :src="book.coverImage || '../../static/components/image.png'" mode="aspectFill"></image>
+						<cover-image class="book-image" :src="book.coverImage || '../../static/components/image.png'"></cover-image>
 						<text class="book-card-name">{{ book.name }}</text>
 					</view>
 				</view>
@@ -48,11 +48,6 @@ const props = defineProps({
 	value: {
 		type: Object,
 		default: () => ({})
-	},
-	// 账本列表
-	books: {
-		type: Array,
-		default: () => []
 	}
 });
 
@@ -62,9 +57,6 @@ const emit = defineEmits(['update:value', 'change']);
 const currentBook = ref(props.value || {});
 // 账本列表
 const bookList = ref([]);
-// 是否显示账本列表弹窗
-const showBookList = ref(false);
-
 // 打开账本列表
 const pickerBookRef = ref(null)
 const showPopupBookList = async () => {
@@ -73,28 +65,6 @@ const showPopupBookList = async () => {
 		console.log('当前账本', currentBook.value);
 		pickerBookRef.value.open()
 	}
-}
-
-// 获取随机图片
-const randomUrl = ref('');
-const randomImage = () => {
-	return new Promise((resolve, reject) => {
-		uni.request({
-			url: 'https://www.dmoe.cc/random.php?return=json',
-			method: 'GET',
-			success: (res) => {
-				console.log('获取随机图片', res);
-				if (res.data.code === 200) {
-					resolve(res.data.imgurl);
-				} else {
-					resolve();
-				}
-			},
-			fail: () => {
-				resolve();
-			}
-		});
-	});
 }
 
 // 关闭弹窗
@@ -110,16 +80,6 @@ const selectBook = (book) => {
 	emit('update:value', book);
 	emit('change', book);
 	closePopup();
-};
-
-// 查看所有账本汇总数据
-const viewAllBooks = () => {
-	console.log('查看所有账本汇总数据');
-	uni.showToast({
-		title: '查看所有账本汇总数据',
-		icon: 'none'
-	});
-	// 这里可以添加跳转到汇总页面的逻辑
 };
 
 // 管理账本

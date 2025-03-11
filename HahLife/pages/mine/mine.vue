@@ -21,12 +21,22 @@
 				<text>帮助与反馈</text>
 				<text class="iconfont icon-arrow-right"></text>
 			</view>
+			<view class="function-item" @click="logout">
+				<text class="iconfont icon-tuichu"></text>
+				<text>退出登录</text>
+				<text class="iconfont icon-arrow-right"></text>
+			</view>
 		</view>
 	</view>
 </template>
 
 <script setup>
 import { ref } from 'vue';
+import config from '@/config';
+import { useUserStore } from '@/store';
+
+const userStore = useUserStore();
+
 const userInfo = ref({
   avatarUrl: uni.getStorageSync('userAvatarUrl') || '../../static/wechat.png',
   userId: uni.getStorageSync('userId'),
@@ -38,6 +48,53 @@ const goToEditInfo = () => {
 	uni.navigateTo({
 		url: '/pages/mine/edit'
 	})
+}
+
+// 退出登录
+const logout = () => {
+	uni.showModal({
+		title: '提示',
+		content: '确定要退出登录吗？',
+		success: (res) => {
+			if (res.confirm) {
+				// 调用退出登录接口
+				uni.request({
+					url: config[process.env.NODE_ENV].baseURL + '/auth/logout',
+					method: 'POST',
+					header: {
+						'content-type': 'application/json',
+						'Sa-token': uni.getStorageSync('tokenValue')
+					},
+					success: () => {
+						// 重置Pinia状态
+						userStore.$reset();
+						
+						// 清除本地存储的所有数据
+						uni.clearStorageSync();
+						
+						// 显示提示
+						uni.showToast({
+							title: '已退出登录',
+							icon: 'success'
+						});
+						
+						// 使用reLaunch而不是redirectTo，彻底清除页面栈和页面缓存
+						setTimeout(() => {
+							uni.reLaunch({
+								url: '/pages/login/login'
+							});
+						}, 1500);
+					},
+					fail: () => {
+						uni.showToast({
+							title: '退出失败，请重试',
+							icon: 'none'
+						});
+					}
+				});
+			}
+		}
+	});
 }
 </script>
 

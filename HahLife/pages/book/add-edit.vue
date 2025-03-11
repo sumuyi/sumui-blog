@@ -69,7 +69,7 @@
 		</view>
 
 		<!-- 账本封面选择器 -->
-		<uv-popup ref="popupBookImageRef" :close-on-click-overlay="false" mode="bottom" round="16">
+		<uv-popup ref="popupBookImageRef" mode="bottom" round="16">
 			<view class="images-selector">
 				<view class="selector-header">
 					<text class="header-title">选择账本封面背景</text>
@@ -115,6 +115,7 @@
 import { ref, computed, onMounted, nextTick } from 'vue';
 import { useUserStore } from '@/store';
 import { bookApi } from '@/api/books'
+import config from '@/config'
 
 // 使用 Pinia store
 const bookStore = useUserStore();
@@ -219,14 +220,66 @@ const selectBookImage = (imgUrl) => {
 	popupBookImageRef.value.close();
 };
 const uploadImage = () => {
+	uni.showLoading({
+	    title: '上传中',
+		mask: true
+	})
 	uni.chooseImage({
 		count: 1,
 		sizeType: ['compressed'],
 		sourceType: ['album', 'camera'],
 		success: (res) => {
-			bookForm.value.coverImage = res.tempFilePaths[0];
-			popupBookImageRef.value.close();
-		}
+			// 获取选择的图片临时路径
+			const tempFilePath = res.tempFilePaths[0];
+			
+			// 上传图片到服务器
+			uni.uploadFile({
+				url: config[process.env.NODE_ENV].baseURL + '/api/files/upload/image',
+				filePath: tempFilePath,
+				name: 'file',
+				header: {
+					'content-type': 'application/json',
+					'Sa-token': uni.getStorageSync('tokenValue')
+				},
+				formData: {
+					type: 'book'
+				},
+				success: (uploadRes) => {
+					const data = JSON.parse(uploadRes.data);
+					if (data.code === 200 && data.result) {
+						// 设置服务器返回的图片URL
+						bookForm.value.coverImage = data.result;
+						uni.showToast({
+							title: '上传成功',
+							icon: 'success'
+						});
+					} else {
+						uni.showToast({
+							title: data.message || '上传失败',
+							icon: 'none'
+						});
+					}
+				},
+				fail: (err) => {
+					console.error('上传失败:', err);
+					uni.showToast({
+						title: '上传失败',
+						icon: 'none'
+					});
+				},
+				complete: () => {
+					popupBookImageRef.value.close();
+					uni.hideLoading();
+				}
+			});
+		},
+		fail:(fail)=>{
+			uni.hideLoading();
+			uni.showToast({
+				title: '选择图片失败',
+				icon: 'none'
+			});
+		},
 	});
 }
 
@@ -257,49 +310,48 @@ const saveBook = async () => {
 	};
 
 	// 保存逻辑（这里简单模拟，实际应调用API）
-	if (isEdit.value) {
-		// 编辑现有账本
-		const index = bookStore.bookList.findIndex(book => book.id === bookId.value);
-		if (index !== -1) {
-			bookStore.bookList[index] = { ...bookStore.bookList[index], ...saveData };
-		}
-	} else {
-		uni.showLoading({
-			title: '保存中...',
-			mask: true
-		});
-		try {
-			let res = await bookApi.addBook(saveData);
-			console.log('res:', res);
+	uni.showLoading({
+		title: isEdit.value ? '更新中' : '添加中',
+		mask: true
+	});
+	try {
+		let res = await bookApi.addBook(saveData);
+		console.log('res:', res);
 
-			// 添加新账本
-			if (!saveData.id) {
-				saveData.id = res
-			}
+		// 添加新账本
+		if (!saveData.id) {
+			saveData.id = res
 			bookStore.bookList.push(saveData);
-			// 如果设为默认账本
-			if (bookForm.value.isDefault) {
-				bookStore.currentBook = saveData;
+		} else {
+			// 更新账本 - 直接修改对应的账本信息，而不是重新添加
+			const index = bookStore.bookList.findIndex(book => book.id === saveData.id);
+			if (index !== -1) {
+				bookStore.bookList.splice(index, 1, saveData);
 			}
-
-			uni.showToast({
-				title: isEdit.value ? '账本已更新' : '账本已添加',
-				icon: 'success',
-				success: () => {
-				setTimeout(() => {
-					uni.navigateBack();
-				}, 1500);
-				}
-			});
-		} catch (error) {
-			console.log('error:', error);
-			uni.showToast({
-				title: '保存失败',
-				icon: 'none'
-			});
-		} finally {
-			uni.hideLoading();
 		}
+		
+		// 如果设为默认账本
+		if (bookForm.value.isDefault) {
+			bookStore.currentBook = saveData;
+		}
+
+		uni.showToast({
+			title: isEdit.value ? '账本已更新' : '账本已添加',
+			icon: 'success',
+			success: () => {
+			setTimeout(() => {
+				uni.navigateBack();
+			}, 1500);
+			}
+		});
+	} catch (error) {
+		console.log('error:', error);
+		uni.showToast({
+			title: '保存失败',
+			icon: 'none'
+		});
+	} finally {
+		uni.hideLoading();
 	}
 };
 
